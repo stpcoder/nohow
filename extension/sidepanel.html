@@ -20,17 +20,17 @@
       </section>
     </template>
     <template id="loading-template">
-      <section class="loading view-enter"><p class="eyebrow">사이트 학습 중</p><h1 id="loading-title">메뉴 구조를 읽는 중</h1><div class="map"><i></i><i></i><i></i><i></i><i></i><i></i><span></span></div><div class="progress"><i></i></div><p class="progress-copy"><span>구조 분석</span><b id="progress-value">0%</b></p><div class="load-list" id="load-list"></div></section>
+      <section class="loading view-enter"><p class="eyebrow">사이트 확인 중</p><h1 id="loading-title">메뉴 구조를 읽는 중</h1><div class="map"><i></i><i></i><i></i><i></i><i></i><i></i><span></span></div><div class="progress"><i></i></div><p class="progress-copy"><span>구조 확인</span><b id="progress-value">0%</b></p><div class="load-list" id="load-list"></div></section>
     </template>
     <template id="ready-template">
       <section class="ready view-enter">
         <div class="summary"><b>✓</b><p><strong id="page-title"></strong><span id="site-stats"></span></p></div>
         <div id="context-content"></div>
-        <div class="secondary"><button id="clear-trace">흔적 지우기</button><button id="rescan">↻ 사이트 다시 읽기</button></div>
+        <div class="secondary"><button id="clear-trace">최근 메뉴 지우기</button><button id="rescan">↻ 사이트 다시 읽기</button></div>
       </section>
     </template>
     <template id="result-template">
-      <section class="results view-enter"><button class="back" id="back">← 목적 다시 찾기</button><span class="found" id="found-label"></span><blockquote id="quote"></blockquote><h1 id="result-title"></h1><p class="body-copy" id="result-copy"></p><div class="result-list" id="result-list"></div><div class="safe human"><b>☝</b><p><strong>결정과 클릭은 사람이</strong><span>원본 위치를 표시할 뿐, 대신 실행하지 않습니다.</span></p></div></section>
+      <section class="results view-enter"><button class="back" id="back">← 다른 업무 찾기</button><span class="found" id="found-label"></span><blockquote id="quote"></blockquote><h1 id="result-title"></h1><p class="body-copy" id="result-copy"></p><div class="result-list" id="result-list"></div><div class="safe human"><b>☝</b><p><strong>결정과 클릭은 사용자가 직접</strong><span>여기만은 원본 위치를 표시하고 사용자의 확인을 기다립니다.</span></p></div></section>
     </template>
     <script src="intent-engine.js"></script>
     <script src="sidepanel.js"></script>

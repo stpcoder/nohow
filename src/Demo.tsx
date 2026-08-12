@@ -158,20 +158,20 @@ export function Demo({ onExit }: DemoProps) {
                 <button className="panel-primary" onClick={() => setScanState('scanning')}>
                   사이트 안전 탐색 시작 <ArrowRight size={17} />
                 </button>
-                <div className="safe-note"><ShieldCheck size={17} /><p><b>사람이 확인하기 전에는 실행하지 않음</b><span>읽기 전용 DOM 분석 · 위험 행동 자동 제외</span></p></div>
+                <div className="safe-note"><ShieldCheck size={17} /><p><b>사용자가 확인하기 전에는 실행하지 않음</b><span>화면 구조만 확인 · 제출·삭제·결제 자동 제외</span></p></div>
               </div>
             )}
 
             {scanState === 'scanning' && (
               <div className="panel-scanning panel-enter">
-                <p className="panel-eyebrow">사이트 학습 중</p>
+                <p className="panel-eyebrow">사이트 확인 중</p>
                 <h2>{scanMessages[scanIndex]}</h2>
                 <div className="scan-map">
                   {Array.from({ length: 11 }).map((_, index) => <i key={index} className={index <= scanIndex * 2 ? 'found' : ''} />)}
                   <span className="scan-beam" style={{ top: `${15 + scanIndex * 14}%` }} />
                 </div>
                 <div className="scan-progress"><span style={{ width: `${scanProgress}%` }} /></div>
-                <div className="scan-progress-copy"><span>구조 분석</span><b>{scanProgress}%</b></div>
+                <div className="scan-progress-copy"><span>구조 확인</span><b>{scanProgress}%</b></div>
                 <div className="scan-live-list">
                   {scanMessages.slice(0, scanIndex + 1).map((message, index) => (
                     <p key={message}><CheckCircle2 size={15} /> {message.replace(' 중', '')}{index === scanIndex && scanProgress < 100 ? <em>…</em> : null}</p>
@@ -222,27 +222,27 @@ function ContextResolver({ siteCounts, trace, match, onConfirm, onReset, onResca
     <div className="panel-ready context-resolver panel-enter">
       <div className="ready-summary">
         <div className="ready-icon"><Check size={22} /></div>
-        <div><p>기능 지도 준비 완료</p><span>{siteCounts.controls}개 조작 요소 · {siteCounts.menus}개 메뉴 · {Math.max(siteCounts.forms, 4)}개 업무 흐름</span></div>
+        <div><p>사이트 확인 완료</p><span>{siteCounts.controls}개 버튼·링크 · {siteCounts.menus}개 메뉴 · {Math.max(siteCounts.forms, 4)}개 업무 흐름</span></div>
       </div>
 
       {!trace.length ? (
         <>
-          <p className="panel-eyebrow">대신 묻지 않고 맥락을 읽습니다</p>
+          <p className="panel-eyebrow">최근 이동 경로를 확인합니다</p>
           <h2>하던 일을 이어가세요.</h2>
-          <p className="panel-body">왼쪽 포털에서 평소처럼 메뉴를 눌러보세요. 여기만이 현재 화면과 최근 클릭을 기능 지도에 겹쳐 목적을 복원합니다.</p>
+          <p className="panel-body">왼쪽 포털에서 평소처럼 메뉴를 눌러보세요. 여기만이 최근에 누른 메뉴와 사이트의 업무 지도를 대조합니다.</p>
           <div className="trace-empty">
             <MousePointer2 size={22} />
-            <p><b>첫 번째 단서를 기다리고 있어요</b><span>입력값은 읽지 않고 버튼·링크의 이름만 세션에 보존합니다.</span></p>
+            <p><b>먼저 관련 메뉴를 눌러보세요</b><span>입력값은 읽지 않고 버튼·링크의 이름만 이 탭에 보관합니다.</span></p>
           </div>
           <div className="context-privacy"><ShieldCheck size={16} /><span>텍스트 입력값 저장 안 함 · 이 탭의 최근 클릭 최대 5개</span></div>
         </>
       ) : (
         <>
-          <p className="panel-eyebrow">사용자가 여기까지 온 경로</p>
-          <h2>{ready ? '목적이 한곳에서 만났어요.' : '의도 단서를 모으고 있어요.'}</h2>
+          <p className="panel-eyebrow">최근에 누른 메뉴</p>
+          <h2>{ready ? '관련 업무를 찾았어요.' : '관련 업무를 찾고 있어요.'}</h2>
           <div className="context-stack">
             <section className="trace-card">
-              <div className="context-card-head"><span>실시간 Intent Trace</span><b>{trace.length}/5</b></div>
+              <div className="context-card-head"><span>최근 이동 경로</span><b>{trace.length}/5</b></div>
               <div className="trace-list">
                 {trace.map((event, index) => (
                   <div key={event.id} className={index === trace.length - 1 ? 'latest' : ''}>
@@ -252,23 +252,23 @@ function ContextResolver({ siteCounts, trace, match, onConfirm, onReset, onResca
               </div>
             </section>
 
-            <div className={`context-bridge ${ready ? 'matched' : ''}`}><span>{ready ? `${match?.evidence.length ?? 3}개의 단서가 같은 업무에서 만남` : '기능 지도와 대조 중'}</span></div>
+            <div className={`context-bridge ${ready ? 'matched' : ''}`}><span>{ready ? `최근 메뉴 ${match?.evidence.length ?? 3}개가 같은 업무와 연결됨` : '사이트 업무 지도와 비교 중'}</span></div>
 
             <section className={`graph-card ${ready ? 'matched' : ''}`}>
-              <div className="context-card-head"><span>Capability Graph</span><b>v1.0</b></div>
+              <div className="context-card-head"><span>사이트 업무 지도</span><b>v1.0</b></div>
               {match ? (
                 <>
                   <p className="graph-title">{match.title}</p>
                   <div className="graph-path">{match.path.map((node, index) => <span key={node} className={index < Math.max(match.evidence.length, 1) ? 'active' : ''}>{node}</span>)}</div>
                 </>
-              ) : <p className="graph-wait">관련 업무 노드를 찾는 중입니다.</p>}
+              ) : <p className="graph-wait">관련 업무를 찾는 중입니다.</p>}
             </section>
           </div>
 
           {ready && match ? (
             <div className="intent-proposal panel-enter">
-              <div><span>복원한 목적</span><b>{match.title}</b><small>근거 {match.evidence.length}개 일치 · 최종 실행은 사람 확인</small></div>
-              <button className="panel-primary" onClick={() => onConfirm(match.intent)}>이 목적이 맞아요 <ArrowRight size={17} /></button>
+              <div><span>찾은 업무</span><b>{match.title}</b><small>최근에 누른 메뉴 {match.evidence.length}개가 이 업무와 연결됩니다.</small></div>
+              <button className="panel-primary" onClick={() => onConfirm(match.intent)}>찾던 업무가 맞아요 <ArrowRight size={17} /></button>
             </div>
           ) : (
             <p className="context-hint"><MousePointer2 size={14} /> 왼쪽에서 관련 메뉴를 한두 번 더 눌러보세요.</p>
@@ -276,8 +276,8 @@ function ContextResolver({ siteCounts, trace, match, onConfirm, onReset, onResca
         </>
       )}
       <div className="context-secondary-actions">
-        {trace.length > 0 && <button onClick={onReset}>흔적 지우기</button>}
-        <button onClick={onRescan}><ScanLine size={13} /> 다시 학습</button>
+        {trace.length > 0 && <button onClick={onReset}>최근 메뉴 지우기</button>}
+        <button onClick={onRescan}><ScanLine size={13} /> 사이트 다시 확인</button>
       </div>
     </div>
   )
@@ -314,11 +314,11 @@ function IntentResult({ intent, match, completed, onBack, revealOriginal }: Inte
   if (intent === 'withdraw') {
     return (
       <div className="intent-result panel-enter">
-        <button className="result-back" onClick={onBack}><ArrowLeft size={15} /> 목적 다시 찾기</button>
-        <div className="understood"><Sparkles size={14} /> 클릭 근거 {match?.evidence.length ?? 3}개로 목적을 복원했어요</div>
+        <button className="result-back" onClick={onBack}><ArrowLeft size={15} /> 다른 업무 찾기</button>
+        <div className="understood"><Sparkles size={14} /> 최근에 누른 메뉴 {match?.evidence.length ?? 3}개로 찾았어요</div>
         <blockquote>복지 포인트 → 제휴 복지몰 → 회원관리</blockquote>
         <div className="result-title-row"><div><small>추천 업무</small><h2>제휴 복지몰 회원 해지 신청</h2></div><span className="risk-badge">최종 확인 필요</span></div>
-        <p className="result-summary">총 42개 메뉴 중 관련된 3단계만 남겼어요. 해지는 되돌릴 수 있어도 포인트는 복구되지 않으니, 마지막 신청은 원본 화면에서 직접 진행합니다.</p>
+        <p className="result-summary">총 42개 메뉴에서 필요한 3단계를 찾았어요. 해지 후 포인트는 복구되지 않으므로, 내용을 확인한 사용자가 원본 화면에서 직접 신청합니다.</p>
 
         <div className="decision-card">
           <span>신청 전 확인</span>
@@ -330,13 +330,13 @@ function IntentResult({ intent, match, completed, onBack, revealOriginal }: Inte
         <div className="guided-steps">
           <div className="guided-step complete"><i><Check size={13} /></i><p><b>메뉴 경로 찾기</b><span>복리후생 › 제휴 복지몰 › 회원관리</span></p></div>
           <div className={`guided-step ${withdrawStage >= 3 ? 'complete' : 'active'}`}><i>{withdrawStage >= 3 ? <Check size={13} /> : '2'}</i><p><b>해지 약관 읽기</b><span>포인트·진행 중 주문 영향 확인</span></p><button onClick={() => { setWithdrawStage(3); revealOriginal('withdraw', 'original-terms') }}>약관 열기</button></div>
-          <div className={`guided-step ${withdrawStage >= 3 ? 'active' : ''}`}><i>3</i><p><b>본인이 동의하고 신청</b><span>AI가 대신 체크하거나 제출하지 않음</span></p></div>
+          <div className={`guided-step ${withdrawStage >= 3 ? 'active' : ''}`}><i>3</i><p><b>본인이 동의하고 신청</b><span>AI는 원본 신청 위치까지 안내</span></p></div>
         </div>
 
         <button className="panel-primary danger-aware" onClick={() => { setWithdrawStage(3); revealOriginal('withdraw', 'original-confirm') }}>
           원본 신청 화면으로 안내 <MousePointer2 size={17} />
         </button>
-        <div className="human-control"><UserRound size={16} /><p><b>여기서부터는 사람의 영역</b><span>약관 동의와 최종 신청은 원본 버튼을 직접 클릭하세요.</span></p></div>
+        <div className="human-control"><UserRound size={16} /><p><b>약관과 신청은 직접 확인합니다</b><span>약관 동의와 최종 신청은 원본 버튼을 직접 클릭하세요.</span></p></div>
       </div>
     )
   }
@@ -344,8 +344,8 @@ function IntentResult({ intent, match, completed, onBack, revealOriginal }: Inte
   if (intent === 'reserve') {
     return (
       <div className="intent-result panel-enter">
-        <button className="result-back" onClick={onBack}><ArrowLeft size={15} /> 목적 다시 찾기</button>
-        <div className="understood"><Sparkles size={14} /> 최근 행동과 기능 지도가 연결됐어요</div>
+        <button className="result-back" onClick={onBack}><ArrowLeft size={15} /> 다른 업무 찾기</button>
+        <div className="understood"><Sparkles size={14} /> 누른 메뉴에서 예약 업무를 찾았어요</div>
         <blockquote>예약·시설 → 회의실 예약 → 시간 선택</blockquote>
         <div className="result-title-row"><div><small>추천 업무</small><h2>사내 회의실 빠른 예약</h2></div><span className="low-risk-badge">바로 가능</span></div>
         <p className="result-summary">예약에 필요한 장소, 시간, 인원만 골라 원본 예약표로 연결합니다.</p>
@@ -364,7 +364,7 @@ function IntentResult({ intent, match, completed, onBack, revealOriginal }: Inte
   if (intent === 'expense') {
     return (
       <div className="intent-result panel-enter">
-        <button className="result-back" onClick={onBack}><ArrowLeft size={15} /> 목적 다시 찾기</button>
+        <button className="result-back" onClick={onBack}><ArrowLeft size={15} /> 다른 업무 찾기</button>
         <div className="understood"><Sparkles size={14} /> 관련 흐름 2개를 찾았어요</div>
         <blockquote>비용·자산 → 법인카드 정산</blockquote>
         <h2>어떤 비용을 정산하나요?</h2>
@@ -428,7 +428,7 @@ function LegacyPortal({ view, setView, highlight, completedIntent, onWorkflowCom
                 <button key={item} data-yogi-menu data-trace-target={item} onClick={() => {
                   onActivity(item, group as string)
                   if (traceMode && ['복지 포인트', '제휴 복지몰', '회원관리'].includes(item)) {
-                    flash(`‘${item}’에서 목적 단서를 확인했습니다.`)
+                    flash(`‘${item}’ 메뉴를 최근 이동 경로에 추가했습니다.`)
                     return
                   }
                   if (item === '회의실 예약') setView('reserve')

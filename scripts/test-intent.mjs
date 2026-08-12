@@ -22,4 +22,4 @@ assert.equal(reservation?.id, 'reserve')
 assert.equal(reservation?.ready, true)
 
 assert.equal(infer(trace(['공지사항', '도움말'])), null)
-console.log('Intent Trace × Capability Graph tests passed.')
+console.log('Recent menu × work map tests passed.')

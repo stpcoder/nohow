@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "여기만 — 필요한 화면만",
-  "version": "0.2.0",
-  "description": "최근 클릭과 사이트 기능 지도를 겹쳐 사용자가 하려던 원본 업무를 근거와 함께 복원합니다.",
+  "version": "0.2.1",
+  "description": "최근에 누른 메뉴를 보고 필요한 원본 업무와 처리 순서를 보여줍니다.",
   "minimum_chrome_version": "116",
   "permissions": ["activeTab", "scripting", "sidePanel", "storage"],
   "background": {

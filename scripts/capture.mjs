@@ -82,14 +82,14 @@ async function verifyLanding() {
   const pageErrors = []
   desktop.on('pageerror', (error) => pageErrors.push(error.message))
   await desktop.goto(`${baseUrl}/`, { waitUntil: 'networkidle' })
-  await desktop.screenshot({ path: 'qa/screenshots/landing-full.png', fullPage: true })
-  assert.equal(await desktop.locator('h1').filter({ hasText: '여기까지 온 경로가' }).count(), 1)
+  await desktop.screenshot({ path: 'qa/screenshots/landing-desktop.png', fullPage: true })
+  assert.equal(await desktop.locator('h1').filter({ hasText: '방금 누른 메뉴로' }).count(), 1)
   assert.deepEqual(pageErrors, [])
   await desktop.close()
 
   const cover = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 })
   await cover.goto(`${baseUrl}/`, { waitUntil: 'networkidle' })
-  await cover.screenshot({ path: 'qa/screenshots/playground-cover-1200x630.png' })
+  await cover.screenshot({ path: 'qa/screenshots/landing-capture-1200x630.png' })
   await cover.close()
 
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true })
@@ -107,14 +107,16 @@ async function verifyDemo() {
   await page.goto(`${baseUrl}/demo`, { waitUntil: 'networkidle' })
   await page.screenshot({ path: 'qa/screenshots/demo-start.png' })
   await page.getByRole('button', { name: /사이트 안전 탐색 시작/ }).click()
-  await page.getByText('기능 지도 준비 완료').waitFor({ timeout: 7000 })
+  await page.getByText('사이트 확인 완료').waitFor({ timeout: 7000 })
   for (const label of ['복지 포인트', '제휴 복지몰', '회원관리']) {
     await page.locator(`[data-trace-target="${label}"]`).click()
   }
-  await page.getByRole('heading', { name: '목적이 한곳에서 만났어요.' }).waitFor()
+  await page.getByRole('heading', { name: '관련 업무를 찾았어요.' }).waitFor()
+  await pause(page, 700)
   await page.screenshot({ path: 'qa/screenshots/demo-context-inference.png' })
-  await page.getByRole('button', { name: /이 목적이 맞아요/ }).click()
+  await page.getByRole('button', { name: /찾던 업무가 맞아요/ }).click()
   await page.getByRole('heading', { name: /제휴 복지몰/ }).waitFor()
+  await pause(page, 700)
   await page.screenshot({ path: 'qa/screenshots/demo-withdraw-result.png' })
   await page.getByRole('button', { name: '약관 열기' }).click()
   await page.locator('#original-terms').waitFor()
@@ -124,11 +126,13 @@ async function verifyDemo() {
   await page.getByRole('button', { name: /원본 신청 화면으로 안내/ }).click()
   await page.locator('#original-confirm').waitFor()
   assert.equal(await page.locator('#original-confirm').getAttribute('class'), 'yogi-highlight')
+  await pause(page, 500)
   await page.screenshot({ path: 'qa/screenshots/demo-original-highlight.png' })
   await page.locator('.legacy-form-table select').selectOption({ label: '이용 빈도가 낮음' })
   await page.locator('#original-confirm input').check()
   await page.getByRole('button', { name: '회원 해지 신청', exact: true }).click()
   await page.getByRole('heading', { name: '회원 해지 신청을 완료했어요!' }).waitFor()
+  await pause(page, 700)
   await page.screenshot({ path: 'qa/screenshots/demo-success.png' })
   assert.deepEqual(pageErrors, [])
   await page.close()
@@ -151,18 +155,18 @@ async function recordWalkthrough() {
   const scanButton = page.getByRole('button', { name: /사이트 안전 탐색 시작/ })
   await clickWithFocus(page, scanButton, { moveDuration: 1100, holdAfter: 500 })
   await pause(page, 1950)
-  await page.getByText('기능 지도 준비 완료').waitFor({ timeout: 9000 })
+  await page.getByText('사이트 확인 완료').waitFor({ timeout: 9000 })
   await pause(page, 2300)
 
-  // The user's real navigation becomes the prompt; no chat box is needed.
+  // Recent menu clicks are compared with the site's registered work map.
   for (const [label, holdAfter] of [['복지 포인트', 1300], ['제휴 복지몰', 1300], ['회원관리', 2100]]) {
     const menuItem = page.locator(`[data-trace-target="${label}"]`)
     await clickWithFocus(page, menuItem, { moveDuration: 1050, holdAfter })
   }
-  await page.getByRole('heading', { name: '목적이 한곳에서 만났어요.' }).waitFor()
+  await page.getByRole('heading', { name: '관련 업무를 찾았어요.' }).waitFor()
   await pause(page, 2500)
 
-  const confirmIntent = page.getByRole('button', { name: /이 목적이 맞아요/ })
+  const confirmIntent = page.getByRole('button', { name: /찾던 업무가 맞아요/ })
   await clickWithFocus(page, confirmIntent, { moveDuration: 950, holdAfter: 950 })
   await page.getByRole('heading', { name: '제휴 복지몰 회원 해지 신청' }).waitFor()
   await pause(page, 2300)
@@ -206,7 +210,7 @@ async function recordWalkthrough() {
 try {
   await verifyLanding()
   await verifyDemo()
-  await recordWalkthrough()
+  if (process.env.YOGIMAN_SKIP_VIDEO !== '1') await recordWalkthrough()
   console.log('Visual QA and interaction capture completed.')
 } finally {
   await browser.close()

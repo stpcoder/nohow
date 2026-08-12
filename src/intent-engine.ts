@@ -26,7 +26,7 @@ export type IntentMatch = {
 }
 
 /**
- * A small, inspectable Capability Graph for the synthetic portal.
+ * A small, inspectable work map for the synthetic portal.
  * In production this data is generated and versioned per internal system.
  */
 export const capabilityGraph: Capability[] = [

@@ -63,7 +63,7 @@ async function readyScreen() {
   render('ready')
   statusEl.innerHTML = '<i></i> 연결됨'
   document.querySelector('#page-title').textContent = inventory.page.title
-  document.querySelector('#site-stats').textContent = `${inventory.stats.total}개 조작 요소 · ${inventory.stats.forms}개 폼 · 주의 행동 ${inventory.stats.cautions}개`
+  document.querySelector('#site-stats').textContent = `${inventory.stats.total}개 버튼·링크 · ${inventory.stats.forms}개 입력 화면 · 확인이 필요한 행동 ${inventory.stats.cautions}개`
   document.querySelector('#rescan').addEventListener('click', runScan)
   document.querySelector('#clear-trace').addEventListener('click', async () => {
     await send({ type: 'YOGIMAN_CLEAR_TRACE' })
@@ -85,10 +85,10 @@ async function refreshContext() {
 function renderContext(container, trace, match) {
   if (!trace.length) {
     container.innerHTML = `
-      <p class="eyebrow">대신 묻지 않고 맥락을 읽습니다</p>
+      <p class="eyebrow">최근 이동 경로를 확인합니다</p>
       <h1>하던 일을 이어가세요.</h1>
-      <p class="body-copy">이 탭에서 평소처럼 메뉴를 눌러보세요. 현재 화면과 최근 클릭을 기능 지도에 겹쳐 목적을 복원합니다.</p>
-      <div class="trace-empty"><b>↖</b><p><strong>첫 번째 단서를 기다리고 있어요</strong><span>입력값은 읽지 않고 버튼·링크 이름만 보존합니다.</span></p></div>
+      <p class="body-copy">이 탭에서 평소처럼 메뉴를 눌러보세요. 최근에 누른 메뉴와 사이트의 업무 지도를 대조합니다.</p>
+      <div class="trace-empty"><b>↖</b><p><strong>먼저 관련 메뉴를 눌러보세요</strong><span>입력값은 읽지 않고 버튼·링크 이름만 이 탭에 보관합니다.</span></p></div>
       <div class="privacy">✓ 텍스트 입력값 저장 안 함 · 최근 클릭 최대 5개</div>`
     return
   }
@@ -101,14 +101,14 @@ function renderContext(container, trace, match) {
   const graphPath = match?.path?.map((node, index) => `<span class="${index < Math.max(evidenceCount, 1) ? 'active' : ''}">${escapeHtml(node)}</span>`).join('') || ''
 
   container.innerHTML = `
-    <p class="eyebrow">사용자가 여기까지 온 경로</p>
-    <h1>${match?.ready ? '목적이 한곳에서 만났어요.' : '의도 단서를 모으고 있어요.'}</h1>
+    <p class="eyebrow">최근에 누른 메뉴</p>
+    <h1>${match?.ready ? '관련 업무를 찾았어요.' : '관련 업무를 찾고 있어요.'}</h1>
     <div class="context-stack">
-      <article class="trace-card"><div class="card-head"><span>실시간 Intent Trace</span><b>${trace.length}/5</b></div>${traceRows}</article>
-      <div class="bridge ${match?.ready ? 'matched' : ''}"><span>${match?.ready ? `${evidenceCount}개의 단서가 같은 업무에서 만남` : '기능 지도와 대조 중'}</span></div>
-      <article class="graph-card ${match?.ready ? 'matched' : ''}"><div class="card-head"><span>Capability Graph</span><b>v1.0</b></div>${match ? `<h2>${escapeHtml(match.title)}</h2><div class="graph-path">${graphPath}</div>` : '<p class="graph-wait">관련 업무 노드를 찾는 중입니다.</p>'}</article>
+      <article class="trace-card"><div class="card-head"><span>최근 이동 경로</span><b>${trace.length}/5</b></div>${traceRows}</article>
+      <div class="bridge ${match?.ready ? 'matched' : ''}"><span>${match?.ready ? `최근 메뉴 ${evidenceCount}개가 같은 업무와 연결됨` : '사이트 업무 지도와 비교 중'}</span></div>
+      <article class="graph-card ${match?.ready ? 'matched' : ''}"><div class="card-head"><span>사이트 업무 지도</span><b>v1.0</b></div>${match ? `<h2>${escapeHtml(match.title)}</h2><div class="graph-path">${graphPath}</div>` : '<p class="graph-wait">관련 업무를 찾는 중입니다.</p>'}</article>
     </div>
-    ${match?.ready ? `<div class="proposal"><span>복원한 목적</span><strong>${escapeHtml(match.title)}</strong><small>근거 ${evidenceCount}개 일치 · 최종 실행은 사람 확인</small><button class="primary" id="confirm-intent">이 목적이 맞아요 →</button></div>` : '<p class="context-hint">↖ 관련 메뉴를 한두 번 더 눌러보세요.</p>'}`
+    ${match?.ready ? `<div class="proposal"><span>찾은 업무</span><strong>${escapeHtml(match.title)}</strong><small>최근에 누른 메뉴 ${evidenceCount}개가 이 업무와 연결됩니다.</small><button class="primary" id="confirm-intent">찾던 업무가 맞아요 →</button></div>` : '<p class="context-hint">↖ 관련 메뉴를 한두 번 더 눌러보세요.</p>'}`
   document.querySelector('#confirm-intent')?.addEventListener('click', () => showResults(match))
 }
 
@@ -139,17 +139,17 @@ function showResults(match) {
   const matches = findMatches(match)
   render('result')
   document.querySelector('#quote').textContent = match.path.join(' → ')
-  document.querySelector('#found-label').textContent = `클릭 근거 ${match.evidence.length}개로 목적을 복원했어요`
+  document.querySelector('#found-label').textContent = `최근에 누른 메뉴 ${match.evidence.length}개로 찾았어요`
   document.querySelector('#result-title').textContent = match.title
   document.querySelector('#result-copy').textContent = matches.length
-    ? '기능 지도에서 연결된 원본 위치만 표시합니다. 실제 클릭과 최종 결정은 직접 진행합니다.'
-    : '현재 화면에 실행 요소가 보이지 않습니다. 기능 지도의 경로를 따라 원본 메뉴로 이동해 주세요.'
+    ? '업무 지도에 등록된 원본 위치를 표시합니다. 실제 클릭과 최종 결정은 직접 진행합니다.'
+    : '현재 화면에서 실행 버튼을 찾지 못했습니다. 안내된 메뉴로 이동한 뒤 사이트를 다시 확인해 주세요.'
   const list = document.querySelector('#result-list')
   list.innerHTML = matches.map((item, index) => `
     <article class="result-item ${item.risk === 'confirm' ? 'caution' : ''}">
       <div class="result-top"><span>${escapeHtml(item.kind)}</span>${item.risk === 'confirm' ? '<i>사람 확인 필요</i>' : ''}</div>
       <h2>${escapeHtml(item.text.slice(0, 82))}</h2>
-      <p>기능 지도 연결: ${escapeHtml(item.matches.join(' · '))}</p>
+      <p>찾은 기준: ${escapeHtml(item.matches.join(' · '))}</p>
       <button data-index="${index}">원본 위치 표시</button>
     </article>`).join('')
   list.querySelectorAll('button').forEach((button) => button.addEventListener('click', async () => {

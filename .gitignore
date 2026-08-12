@@ -14,5 +14,6 @@ qa/screenshots/*
 !qa/screenshots/demo-withdraw-result.png
 !qa/screenshots/demo-original-highlight.png
 !qa/screenshots/demo-success.png
+!qa/screenshots/demo-contact-sheet.png
 releases/*.zip
 *.log
