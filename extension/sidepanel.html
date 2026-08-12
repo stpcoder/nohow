@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="sidepanel.css" />
+    <title>여기만</title>
+  </head>
+  <body>
+    <header><div class="brand"><i></i>여기만 <small>beta</small></div><span class="status" id="status"><i></i> 준비됨</span></header>
+    <main id="app"></main>
+    <template id="start-template">
+      <section class="start view-enter">
+        <div class="radar"><div class="page-lines"><i></i><i></i><i></i><i></i></div><span></span></div>
+        <p class="eyebrow">현재 탭에서 시작</p>
+        <h1>복잡한 화면을 먼저 읽어볼게요.</h1>
+        <p class="body-copy">화면 안의 메뉴, 버튼, 입력창을 읽어 지금 필요한 원본 기능으로 연결합니다. 제출·삭제·결제는 자동 실행하지 않아요.</p>
+        <button class="primary" id="scan">사이트 안전 탐색 시작 <b>→</b></button>
+        <div class="safe"><b>✓</b><p><strong>읽기 전용으로 먼저 확인</strong><span>이 탭에서만 일시적으로 작동합니다.</span></p></div>
+      </section>
+    </template>
+    <template id="loading-template">
+      <section class="loading view-enter"><p class="eyebrow">사이트 학습 중</p><h1 id="loading-title">메뉴 구조를 읽는 중</h1><div class="map"><i></i><i></i><i></i><i></i><i></i><i></i><span></span></div><div class="progress"><i></i></div><p class="progress-copy"><span>구조 분석</span><b id="progress-value">0%</b></p><div class="load-list" id="load-list"></div></section>
+    </template>
+    <template id="ready-template">
+      <section class="ready view-enter">
+        <div class="summary"><b>✓</b><p><strong id="page-title"></strong><span id="site-stats"></span></p></div>
+        <div id="context-content"></div>
+        <div class="secondary"><button id="clear-trace">흔적 지우기</button><button id="rescan">↻ 사이트 다시 읽기</button></div>
+      </section>
+    </template>
+    <template id="result-template">
+      <section class="results view-enter"><button class="back" id="back">← 목적 다시 찾기</button><span class="found" id="found-label"></span><blockquote id="quote"></blockquote><h1 id="result-title"></h1><p class="body-copy" id="result-copy"></p><div class="result-list" id="result-list"></div><div class="safe human"><b>☝</b><p><strong>결정과 클릭은 사람이</strong><span>원본 위치를 표시할 뿐, 대신 실행하지 않습니다.</span></p></div></section>
+    </template>
+    <script src="intent-engine.js"></script>
+    <script src="sidepanel.js"></script>
+  </body>
+</html>
