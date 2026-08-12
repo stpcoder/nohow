@@ -2,6 +2,8 @@
 
 > **여기까지 온 경로가 곧 프롬프트입니다.**
 
+[실행 데모](https://stpcoder.github.io/yogiman-ai/) · [Wow Moment 바로 보기](https://stpcoder.github.io/yogiman-ai/#/demo) · [최신 릴리스](https://github.com/stpcoder/yogiman-ai/releases/latest)
+
 `여기만`은 복잡한 업무 웹에서 사용자가 방금 누른 메뉴와 현재 화면을 사이트의 기능 지도에 겹쳐, 하려던 업무를 근거와 함께 복원하는 Human-in-the-loop Chrome Side Panel입니다.
 
 ![세 번의 클릭이 하나의 목적으로 합쳐지는 여기만 POC](qa/screenshots/demo-context-inference.png)

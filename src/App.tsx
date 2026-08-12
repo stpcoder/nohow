@@ -5,7 +5,7 @@ import { Demo } from './Demo'
 type Route = 'landing' | 'demo'
 
 function routeFromLocation(): Route {
-  return window.location.pathname.endsWith('/demo') ? 'demo' : 'landing'
+  return window.location.hash === '#/demo' || window.location.pathname.endsWith('/demo') ? 'demo' : 'landing'
 }
 
 export default function App() {
@@ -19,7 +19,7 @@ export default function App() {
 
   const navigate = (next: Route) => {
     const base = import.meta.env.BASE_URL.replace(/\/$/, '')
-    const path = next === 'demo' ? `${base}/demo` : `${base}/`
+    const path = next === 'demo' ? `${base}/#/demo` : `${base}/`
     window.history.pushState({}, '', path)
     window.scrollTo({ top: 0, behavior: 'smooth' })
     setRoute(next)
