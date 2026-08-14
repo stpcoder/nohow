@@ -71,7 +71,8 @@ export function Landing({ onDemo }: LandingProps) {
         <div className="hero-copy hero-reveal">
           <h1>
             필요한 메뉴만 정리해주는
-            <br /><span>당신의 업무를 위한<br className="mobile-break" /> 마법 같은 툴, 여기만</span>
+            <br />당신의 업무를 위한 마법 같은 툴,
+            <br /><span className="hero-name">여기만</span>
           </h1>
           <p className="hero-description">
             <span>업무의 병목은 복잡한 사내 시스템에 있었습니다.</span>
@@ -165,18 +166,18 @@ export function Landing({ onDemo }: LandingProps) {
 
       <section className="friction-section" id="problem">
         <div className="friction-copy">
-          <h2>신입사원과 숙련자 모두에게<br />복잡한 사내 시스템은<br />어려운 벽입니다.</h2>
-          <p>매일 접속하는 시스템도 복잡하다면 여전히 업무를 가로막는 병목이 됩니다.</p>
+          <h2>신입사원과 숙련자 모두에게<span className="friction-core-line">복잡한 사내 시스템은 어려운 벽입니다.</span></h2>
+          <p>복잡한 사내 시스템이 업무의 큰 병목을 차지하고 있었습니다.</p>
         </div>
         <div className="friction-proof">
           <strong>1,100회+</strong>
-          <p>전 세계 직장인들이 업무를 위해 복잡한 시스템 속에서 하루 동안 클릭한 횟수입니다.</p>
+          <p>복잡한 시스템 속에서 하루 동안 클릭한 평균 횟수</p>
         </div>
       </section>
 
       <section className="focus-section" id="solution">
         <div className="focus-heading">
-          <h2>42개의 복잡한 메뉴가<br />필요한 3단계로 정리됩니다.</h2>
+          <h2>42개의 복잡한 메뉴가<br /><span className="accent-line">필요한 3단계로 정리됩니다.</span></h2>
           <p>AI가 목적에 맞는 메뉴만 골라 원본 버튼까지 안내합니다.</p>
         </div>
 
@@ -201,16 +202,15 @@ export function Landing({ onDemo }: LandingProps) {
         </div>
 
         <div className="control-policy">
-          <div><ScanSearch size={22} /><p><b>AI가 필요한 메뉴와 원본 위치를 찾습니다.</b></p></div>
+          <div><ScanSearch size={22} /><p><b>어떤 버튼이 어디에 있는지 살피고 고민합니다.</b></p></div>
           <ArrowRight className="policy-arrow" size={24} />
-          <div><UserRound size={22} /><p><b>사용자는 판단과 업무 처리에 집중합니다.</b></p></div>
+          <div><UserRound size={22} /><p><b>중요한 업무와 문제 해결에 집중합니다.</b></p></div>
         </div>
-        <p className="control-note">사람이 판단하기 좋은 화면에서 AI의 탐색 능력은 살리고 오작동 위험은 줄입니다.</p>
       </section>
 
       <section className="learning-section" id="learning">
         <div className="learning-heading">
-          <h2>여러 사람들의 사용 기록이 쌓일수록<br />복잡한 <span className="keep-together">시스템이 더 쉬워집니다.</span></h2>
+          <h2>여러 사람들의 사용 기록이 쌓일수록<br /><span className="accent-line keep-together">복잡한 시스템이 더 쉬워집니다.</span></h2>
           <p>사람들이 자주 사용하는 메뉴와 처리 방법을 학습해 더 쉽고 빠른 업무 환경을 만듭니다.</p>
         </div>
 
@@ -223,13 +223,13 @@ export function Landing({ onDemo }: LandingProps) {
 
         <div className="learning-insight">
           <Route size={25} />
-          <p><b>사용 기록은 Agent 개발과 사내 시스템 개선에 사용 가능합니다.</b><span>직원들이 자주 쓰는 기능과 반복해서 막히는 구간을 바탕으로 더 나은 시스템을 설계합니다.</span></p>
+          <p><b>사용 기록은 Agent 개발과 사내 시스템 개선에 사용됩니다.</b><span>직원들이 자주 쓰는 기능과 반복해서 막히는 구간을 바탕으로 더 나은 시스템을 설계합니다.</span></p>
         </div>
       </section>
 
       <section className="platform-section">
         <div className="platform-heading">
-          <h2>복잡한 시스템이라면<br />웹과 앱 어디로든 확장 가능합니다.</h2>
+          <h2>복잡한 시스템 어디든<br /><span className="accent-line">확장 가능한 마법같은 솔루션</span></h2>
         </div>
         <div className="platform-list">
           <article>
@@ -244,8 +244,9 @@ export function Landing({ onDemo }: LandingProps) {
       </section>
 
       <section className="final-cta-section">
-        <div>
-          <h2>42개의 복잡한 메뉴가<br /><span>3단계로 바뀌는 마법을 경험해보세요.</span></h2>
+        <div className="final-cta-copy">
+          <h2>복잡한 시스템이 어느새 직관적으로,<br /><span>여러분의 업무 환경이 바뀌는 마법을 경험해보세요.</span></h2>
+          <p><span>어떤 버튼을 누를지가 아니라, 어떻게 문제를 해결할지 고민하세요.</span><span>여기만이 복잡한 시스템을 정리해 문제의 본질에 집중하도록 돕습니다.</span></p>
         </div>
         <button className="final-cta" onClick={onDemo}>
           <AppWindow size={21} /> 데모 체험하기 <ArrowRight size={19} />
