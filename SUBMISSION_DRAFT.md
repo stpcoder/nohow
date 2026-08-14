@@ -1,4 +1,4 @@
-# AI Idea 리그 제출 초안
+# AI Solution 리그 제출 초안
 
 ## 제목
 

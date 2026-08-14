@@ -4,7 +4,6 @@ import {
   Check,
   ChevronRight,
   Database,
-  ExternalLink,
   GitMerge,
   Globe2,
   Monitor,
@@ -71,11 +70,12 @@ export function Landing({ onDemo }: LandingProps) {
       <section className="hero-section">
         <div className="hero-copy hero-reveal">
           <h1>
-            필요한 메뉴만 보여주는,
-            <br /><span>여기만</span>
+            필요한 메뉴만 정리해주는
+            <br /><span>당신의 업무를 위한<br className="mobile-break" /> 마법 같은 툴, 여기만</span>
           </h1>
           <p className="hero-description">
-            업무의 병목은 필요한 기능을 찾고 익히는 시간입니다.
+            <span>업무의 병목은 복잡한 사내 시스템에 있었습니다.</span>
+            <span>시스템 위에서 쉽게 기능을 찾고, 업무 혁신을 경험해보세요.</span>
           </p>
           <div className="hero-actions">
             <button className="primary-cta" onClick={onDemo}>
@@ -153,8 +153,7 @@ export function Landing({ onDemo }: LandingProps) {
 
       <section className="demo-video-section" id="demo-video">
         <div className="demo-video-heading">
-          <h2>80초 데모를 확인하세요.</h2>
-          <p>사이트 탐색부터 회원 해지 목적 발견, 원본 약관 확인과 최종 신청까지 전체 POC 과정을 80초에 담았습니다.</p>
+          <h2>80초 만에 마법같이 간편해지는 데모를 확인해보세요.</h2>
         </div>
         <div className="demo-video-frame">
           <video controls playsInline preload="metadata" poster={demoPoster} width="1440" height="900" aria-label="여기만 회원 해지 POC 데모 영상">
@@ -166,15 +165,12 @@ export function Landing({ onDemo }: LandingProps) {
 
       <section className="friction-section" id="problem">
         <div className="friction-copy">
-          <h2>신입사원과 숙련자 모두에게<br />복잡한 사내 시스템은 어려운 벽입니다.</h2>
-          <p>익숙하지 않은 업무를 처리할 때마다 메뉴 위치와 순서를 다시 찾아야 합니다.</p>
+          <h2>신입사원과 숙련자 모두에게<br />복잡한 사내 시스템은<br />어려운 벽입니다.</h2>
+          <p>매일 접속하는 시스템도 복잡하다면 여전히 업무를 가로막는 병목이 됩니다.</p>
         </div>
         <div className="friction-proof">
           <strong>1,100회+</strong>
-          <p>업무를 하며 하루 평균 앱 사이를 오간 횟수입니다.</p>
-          <a href="https://www.pega.com/about/news/press-releases/research-reveals-employees-switch-apps-over-1100-times-day" target="_blank" rel="noreferrer">
-            Pega, 약 500만 시간 데스크톱 활동 분석 <ExternalLink size={13} />
-          </a>
+          <p>전 세계 직장인들이 업무를 위해 복잡한 시스템 속에서 하루 동안 클릭한 횟수입니다.</p>
         </div>
       </section>
 
@@ -214,36 +210,35 @@ export function Landing({ onDemo }: LandingProps) {
 
       <section className="learning-section" id="learning">
         <div className="learning-heading">
-          <h2>사용 기록이 쌓일수록<br />복잡한 업무용 시스템이 쉬워집니다.</h2>
-          <p>여러 사람의 사용 기록을 모아 필요한 기능을 더 빨리 찾습니다.</p>
+          <h2>여러 사람들의 사용 기록이 쌓일수록<br />복잡한 <span className="keep-together">시스템이 더 쉬워집니다.</span></h2>
+          <p>사람들이 자주 사용하는 메뉴와 처리 방법을 학습해 더 쉽고 빠른 업무 환경을 만듭니다.</p>
         </div>
 
         <div className="learning-flow" aria-label="복잡한 업무용 시스템을 쉽게 만드는 과정">
           <article><span>1</span><Monitor size={21} /><h3>버튼과 메뉴의 위치를 파악합니다.</h3></article>
           <article><span>2</span><Database size={21} /><h3>자주 사용하는 처리 순서를 모읍니다.</h3></article>
-          <article><span>3</span><GitMerge size={21} /><h3>AI가 같은 업무끼리 정리합니다.</h3></article>
-          <article><span>4</span><ShieldCheck size={21} /><h3>운영자 검토 후 직원에게 제공합니다.</h3></article>
+          <article><span>3</span><GitMerge size={21} /><h3>주로 사용하는 메뉴 패턴을 학습합니다.</h3></article>
+          <article><span>4</span><ShieldCheck size={21} /><h3>Agent 개발과 사내 시스템 개선에 활용합니다.</h3></article>
         </div>
 
         <div className="learning-insight">
           <Route size={25} />
-          <p><b>사용 기록은 교육과 시스템 개선에도 활용할 수 있습니다.</b><span>자주 쓰는 기능과 반복해서 헤매는 구간을 찾아 개선 우선순위를 정합니다.</span></p>
+          <p><b>사용 기록은 Agent 개발과 사내 시스템 개선에 사용 가능합니다.</b><span>직원들이 자주 쓰는 기능과 반복해서 막히는 구간을 바탕으로 더 나은 시스템을 설계합니다.</span></p>
         </div>
       </section>
 
       <section className="platform-section">
         <div className="platform-heading">
-          <h2>웹에서 시작해<br />사내 실행 프로그램까지 확장할 수 있습니다.</h2>
-          <p>웹과 실행 프로그램의 버튼과 메뉴를 같은 방식으로 정리합니다.</p>
+          <h2>복잡한 시스템이라면<br />웹과 앱 어디로든 확장 가능합니다.</h2>
         </div>
         <div className="platform-list">
           <article>
             <Globe2 size={22} />
-            <div><h3>웹 사이트 · 구현 완료</h3><p>Chrome 확장 프로그램이 화면의 버튼과 메뉴를 읽어 필요한 기능을 찾습니다.</p></div>
+            <div><h3>웹 사이트용 여기만</h3><p>Chrome 확장 프로그램이 버튼과 메뉴를 읽어 필요한 기능을 찾고, 마법처럼 업무 시간을 단축합니다.</p></div>
           </article>
           <article>
             <AppWindow size={22} />
-            <div><h3>사내 실행 프로그램 · 확장 예정</h3><p>운영체제의 접근성 기능으로 사내 프로그램의 버튼과 메뉴도 파악할 수 있습니다.</p></div>
+            <div><h3>사내 앱용 여기만</h3><p>복잡한 사내 프로그램도 필요한 기능만 정리해 더 빠른 업무와 새로운 혁신을 만듭니다.</p></div>
           </article>
         </div>
       </section>
@@ -259,7 +254,7 @@ export function Landing({ onDemo }: LandingProps) {
 
       <footer>
         <span className="wordmark"><i className="wordmark-dot" /> 여기만</span>
-        <small>2026 SK AI Hackathon · AI Idea League</small>
+        <small>2026 SK AI Hackathon · AI Solution League</small>
       </footer>
     </main>
   )

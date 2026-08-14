@@ -2,10 +2,10 @@
 
 # 여기만
 
-### 필요한 메뉴만 보여주는, 여기만
+### 필요한 메뉴만 정리해주는 당신의 업무를 위한 마법 같은 툴, 여기만
 
-업무의 병목은 필요한 기능을 찾고 익히는 시간입니다.<br />
-여기만은 42개의 복잡한 메뉴를 필요한 3단계로 정리합니다.
+업무의 병목은 복잡한 사내 시스템에 있었습니다.<br />
+시스템 위에서 쉽게 기능을 찾고 업무 혁신을 경험해보세요.
 
 [실행 데모](https://stpcoder.github.io/yogiman-ai/#/demo) · [전체 영상](https://github.com/stpcoder/yogiman-ai/releases/download/v0.2.1/yogiman-demo.mp4) · [확장 프로그램 다운로드](https://github.com/stpcoder/yogiman-ai/releases/latest)
 
@@ -131,7 +131,7 @@ npm run capture
 | `src/intent-engine.ts` | 사용자 목적과 업무 지도를 비교하는 코드 |
 | `extension/` | 설치 가능한 Chrome Manifest V3 확장 프로그램 |
 | `docs/ARCHITECTURE.md` | 업무 지도 생성과 전사 적용 구조 |
-| `SUBMISSION_DRAFT.md` | AI Idea 리그 제출 글 |
+| `SUBMISSION_DRAFT.md` | AI Solution 리그 제출 글 |
 | `PRODUCT_PLAN.md` | 제품 범위와 파일럿 계획 |
 | `qa/video/yogiman-demo.mp4` | Playwright로 녹화한 전체 시연 영상 |
 
