@@ -62,7 +62,7 @@ export function Landing({ onDemo }: LandingProps) {
           <a href="#solution">해결 방식</a>
           <a href="#learning">확장 가능성</a>
           <button className="nav-demo" onClick={onDemo}>
-            데모 체험하기 <ArrowRight size={15} />
+            '여기만' 눌러보세요 <ArrowRight size={15} />
           </button>
         </div>
       </nav>
@@ -70,17 +70,16 @@ export function Landing({ onDemo }: LandingProps) {
       <section className="hero-section">
         <div className="hero-copy hero-reveal">
           <h1>
-            필요한 메뉴만 정리해주는
-            <br />당신의 업무를 위한 마법 같은 툴,
+            당신의 업무를 위한 마법 같은 툴,
             <br /><span className="hero-name">여기만</span>
           </h1>
           <p className="hero-description">
             <span>업무의 병목은 복잡한 사내 시스템에 있었습니다.</span>
-            <span>시스템 위에서 쉽게 기능을 찾고, 업무 혁신을 경험해보세요.</span>
+            <span>복잡한 사내 시스템 속에서 쉽게 기능을 찾고, 업무 혁신을 경험해보세요.</span>
           </p>
           <div className="hero-actions">
             <button className="primary-cta" onClick={onDemo}>
-              데모 체험하기 <Play size={17} fill="currentColor" />
+              '여기만' 눌러보세요 <Play size={17} fill="currentColor" />
             </button>
             <a className="text-cta" href="#demo-video">
               80초 영상 보기 <ArrowRight size={16} />
@@ -229,7 +228,7 @@ export function Landing({ onDemo }: LandingProps) {
 
       <section className="platform-section">
         <div className="platform-heading">
-          <h2>복잡한 시스템 어디든<br /><span className="accent-line">확장 가능한 마법같은 솔루션</span></h2>
+          <h2>복잡한 시스템 어디든<br /><span className="accent-line">확장 가능한 <span className="keep-together">마법같은 솔루션</span></span></h2>
         </div>
         <div className="platform-list">
           <article>
@@ -245,11 +244,11 @@ export function Landing({ onDemo }: LandingProps) {
 
       <section className="final-cta-section">
         <div className="final-cta-copy">
-          <h2>복잡한 시스템이 어느새 직관적으로,<br /><span>여러분의 업무 환경이 바뀌는 마법을 경험해보세요.</span></h2>
+          <h2>복잡한 시스템이 어느새 직관적으로,<br /><span>업무 환경이 바뀌는 마법을 경험해보세요.</span></h2>
           <p><span>어떤 버튼을 누를지가 아니라, 어떻게 문제를 해결할지 고민하세요.</span><span>여기만이 복잡한 시스템을 정리해 문제의 본질에 집중하도록 돕습니다.</span></p>
         </div>
         <button className="final-cta" onClick={onDemo}>
-          <AppWindow size={21} /> 데모 체험하기 <ArrowRight size={19} />
+          <AppWindow size={21} /> '여기만' 눌러보세요 <ArrowRight size={19} />
         </button>
       </section>
 

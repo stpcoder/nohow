@@ -202,7 +202,8 @@ footer p { margin: 0; }footer small { justify-self: end; }
 .learning-insight p { margin: 0; display: grid; gap: 6px; }.learning-insight b { font-size: 16px; }.learning-insight span { color: #38431f; font-size: 15px; line-height: 1.65; }
 .privacy-note { margin: 19px 0 0; color: #8f99aa; font-size: 12px; text-align: right; }
 
-.platform-section { padding: 145px 0; display: grid; grid-template-columns: .78fr 1.22fr; gap: 110px; align-items: start; }
+.platform-section { padding: 145px 0; display: grid; grid-template-columns: .78fr 1.22fr; gap: 110px; align-items: stretch; }
+.platform-heading { display: flex; flex-direction: column; justify-content: center; }
 .platform-heading h2 { font-size: clamp(40px, 3.5vw, 55px); }
 .platform-list { border-top: 1px solid #cfd6e1; }
 .platform-list article { min-height: 190px; display: grid; grid-template-columns: 50px 1fr; gap: 14px; align-items: start; padding: 34px 24px; border-bottom: 1px solid #cfd6e1; }
