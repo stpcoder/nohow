@@ -61,9 +61,9 @@ export function Landing({ onDemo }: LandingProps) {
         <div className="nav-links">
           <a href="#demo-video">데모 영상</a>
           <a href="#solution">해결 방식</a>
-          <a href="#learning">업무 지도</a>
+          <a href="#learning">확장 가능성</a>
           <button className="nav-demo" onClick={onDemo}>
-            데모 열기 <ArrowRight size={15} />
+            데모 체험하기 <ArrowRight size={15} />
           </button>
         </div>
       </nav>
@@ -71,24 +71,20 @@ export function Landing({ onDemo }: LandingProps) {
       <section className="hero-section">
         <div className="hero-copy hero-reveal">
           <h1>
-            복잡한 사내 시스템에서
-            <br /><span>필요한 메뉴만<br className="mobile-break" /> 보여줍니다.</span>
+            필요한 메뉴만 보여주는,
+            <br /><span>여기만</span>
           </h1>
           <p className="hero-description">
-            여기만은 화면의 버튼·링크·메뉴와 실제 이용 경로를 업무별로 정리합니다. AI는 목적에 맞는
-            원본 메뉴를 추천하고, 약관 확인과 최종 실행은 사용자가 직접 합니다.
+            업무의 병목은 필요한 기능을 찾고 익히는 시간입니다.
           </p>
           <div className="hero-actions">
             <button className="primary-cta" onClick={onDemo}>
-              회원 해지 데모 보기 <Play size={17} fill="currentColor" />
+              데모 체험하기 <Play size={17} fill="currentColor" />
             </button>
             <a className="text-cta" href="#demo-video">
               80초 영상 보기 <ArrowRight size={16} />
             </a>
           </div>
-          <p className="security-caption">
-            <ShieldCheck size={15} /> AI는 실행하지 않습니다. 원본 버튼은 사용자가 직접 클릭합니다.
-          </p>
         </div>
 
         <div className="hero-product hero-reveal hero-reveal-late" aria-label="여기만 제품 미리보기">
@@ -138,31 +134,27 @@ export function Landing({ onDemo }: LandingProps) {
                 <div className="preview-trace">
                   <div className="preview-trace-head"><small>최근 이동 경로</small><b>3/5</b></div>
                   {['복지 포인트', '제휴 복지몰', '회원관리'].map((item, index) => (
-                    <p key={item}><i>{index + 1}</i><span>{item}<small>사용자가 클릭</small></span><Check size={12} /></p>
+                    <p key={item}><i>{index + 1}</i><span>{item}</span><Check size={12} /></p>
                   ))}
                 </div>
                 <div className="preview-intersection"><GitMerge size={13} /> 42개 메뉴에서 회원 해지 업무를 찾음</div>
                 <div className="preview-result">
                   <div className="result-label"><ScanSearch size={14} /> 필요한 메뉴</div>
                   <h3>제휴 복지몰 회원 해지</h3>
-                  <p>원본 화면의 42개 메뉴를 필요한 3단계로 정리했습니다.</p>
                   <div className="mini-step"><span>1</span><p><b>소멸 예정 포인트 확인</b><small>12,480 P</small></p><Check size={15} /></div>
-                  <div className="mini-step active"><span>2</span><p><b>탈퇴 약관 읽고 동의</b><small>사용자가 직접 확인합니다</small></p><MousePointer2 size={15} /></div>
+                  <div className="mini-step active"><span>2</span><p><b>탈퇴 약관 읽고 동의</b></p><MousePointer2 size={15} /></div>
                   <button className="preview-action">원본 메뉴 안내 <ArrowRight size={14} /></button>
                 </div>
               </div>
             </div>
           </div>
-          <div className="human-badge"><MousePointer2 size={16} /> 최종 클릭은 사용자</div>
         </div>
       </section>
 
       <section className="demo-video-section" id="demo-video">
         <div className="demo-video-heading">
-          <h2>복잡한 화면이 3단계로<br />정리되는 과정을 확인하세요.</h2>
-          <p>
-            사이트 탐색부터 회원 해지 목적 발견, 원본 약관 확인과 최종 신청까지 전체 POC 흐름을 80초에 담았습니다.
-          </p>
+          <h2>80초 데모를 확인하세요.</h2>
+          <p>사이트 탐색부터 회원 해지 목적 발견, 원본 약관 확인과 최종 신청까지 전체 POC 과정을 80초에 담았습니다.</p>
         </div>
         <div className="demo-video-frame">
           <video controls playsInline preload="metadata" poster={demoPoster} width="1440" height="900" aria-label="여기만 회원 해지 POC 데모 영상">
@@ -170,20 +162,16 @@ export function Landing({ onDemo }: LandingProps) {
             브라우저가 MP4 영상 재생을 지원하지 않습니다.
           </video>
         </div>
-        <p className="demo-video-note"><ShieldCheck size={15} /> 영상에서도 약관 확인과 최종 신청은 사용자가 직접 진행합니다.</p>
       </section>
 
       <section className="friction-section" id="problem">
         <div className="friction-copy">
-          <h2>전산 업무의 병목은<br />기능을 찾는 시간입니다.</h2>
-          <p>
-            시스템이 늘고 화면이 바뀔 때마다 사용자는 메뉴 위치와 처리 순서를 다시 익힙니다.
-            이 탐색 비용은 신규 입사자에게만 생기지 않습니다. 가끔 쓰는 업무 앞에서는 숙련자도 같은 메뉴를 다시 찾습니다.
-          </p>
+          <h2>신입사원과 숙련자 모두에게<br />복잡한 사내 시스템은 어려운 벽입니다.</h2>
+          <p>익숙하지 않은 업무를 처리할 때마다 메뉴 위치와 순서를 다시 찾아야 합니다.</p>
         </div>
         <div className="friction-proof">
           <strong>1,100회+</strong>
-          <p>운영지원 인력이 하루 동안 업무 앱을 전환한 횟수입니다.</p>
+          <p>업무를 하며 하루 평균 앱 사이를 오간 횟수입니다.</p>
           <a href="https://www.pega.com/about/news/press-releases/research-reveals-employees-switch-apps-over-1100-times-day" target="_blank" rel="noreferrer">
             Pega, 약 500만 시간 데스크톱 활동 분석 <ExternalLink size={13} />
           </a>
@@ -192,11 +180,8 @@ export function Landing({ onDemo }: LandingProps) {
 
       <section className="focus-section" id="solution">
         <div className="focus-heading">
-          <h2>42개 메뉴에서<br />필요한 3단계만 남깁니다.</h2>
-          <p>
-            여기만은 원본 시스템을 바꾸지 않습니다. AI가 목적과 관련된 기능을 찾아 여기만 패널에 정리하고,
-            사용자가 누를 원본 버튼의 위치를 안내합니다.
-          </p>
+          <h2>42개의 복잡한 메뉴가<br />필요한 3단계로 정리됩니다.</h2>
+          <p>AI가 목적에 맞는 메뉴만 골라 원본 버튼까지 안내합니다.</p>
         </div>
 
         <div className="focus-compare" aria-label="원본 시스템과 여기만 화면 비교">
@@ -220,65 +205,60 @@ export function Landing({ onDemo }: LandingProps) {
         </div>
 
         <div className="control-policy">
-          <div><ScanSearch size={22} /><p><small>여기만</small><b>메뉴 분석 · 업무 추천 · 원본 위치 안내</b></p></div>
+          <div><ScanSearch size={22} /><p><b>AI가 필요한 메뉴와 원본 위치를 찾습니다.</b></p></div>
           <ArrowRight className="policy-arrow" size={24} />
-          <div><UserRound size={22} /><p><small>사용자</small><b>약관 확인 · 값 입력 · 최종 버튼 클릭</b></p></div>
+          <div><UserRound size={22} /><p><b>사용자는 판단과 업무 처리에 집중합니다.</b></p></div>
         </div>
-        <p className="control-note">AI가 체크박스나 신청 버튼을 대신 누르지 않아 오작동과 과도한 권한 위임 위험을 줄입니다.</p>
+        <p className="control-note">사람이 판단하기 좋은 화면에서 AI의 탐색 능력은 살리고 오작동 위험은 줄입니다.</p>
       </section>
 
       <section className="learning-section" id="learning">
         <div className="learning-heading">
-          <h2>사용 경로가 쌓일수록<br />업무 지도가 정확해집니다.</h2>
-          <p>
-            여러 사용자가 실제로 거친 메뉴 순서를 개인 식별자 없이 합산합니다. AI는 반복되는 경로를 업무 후보로 묶고,
-            시스템 운영자가 확인한 경로만 사용자에게 배포합니다.
-          </p>
+          <h2>사용 기록이 쌓일수록<br />복잡한 업무용 시스템이 쉬워집니다.</h2>
+          <p>여러 사람의 사용 기록을 모아 필요한 기능을 더 빨리 찾습니다.</p>
         </div>
 
-        <div className="learning-flow" aria-label="업무 지도가 만들어지는 과정">
-          <article><span>1</span><Monitor size={21} /><h3>화면 구조를 읽습니다</h3><p>버튼, 링크, 메뉴 이름과 화면 이동을 연결합니다.</p></article>
-          <article><span>2</span><Database size={21} /><h3>이용 경로를 합칩니다</h3><p>여러 사용자가 반복해서 거친 메뉴 순서를 집계합니다.</p></article>
-          <article><span>3</span><GitMerge size={21} /><h3>업무 후보로 묶습니다</h3><p>AI가 공통 경로와 완료 지점을 같은 업무로 정리합니다.</p></article>
-          <article><span>4</span><ShieldCheck size={21} /><h3>운영자가 승인합니다</h3><p>권한과 선행 조건을 확인한 지도만 배포합니다.</p></article>
+        <div className="learning-flow" aria-label="복잡한 업무용 시스템을 쉽게 만드는 과정">
+          <article><span>1</span><Monitor size={21} /><h3>버튼과 메뉴의 위치를 파악합니다.</h3></article>
+          <article><span>2</span><Database size={21} /><h3>자주 사용하는 처리 순서를 모읍니다.</h3></article>
+          <article><span>3</span><GitMerge size={21} /><h3>AI가 같은 업무끼리 정리합니다.</h3></article>
+          <article><span>4</span><ShieldCheck size={21} /><h3>운영자 검토 후 직원에게 제공합니다.</h3></article>
         </div>
 
         <div className="learning-insight">
           <Route size={25} />
-          <p><b>업무 지도는 사용 안내에서 끝나지 않습니다.</b><span>자주 쓰는 경로, 반복해서 되돌아가는 구간, 거의 쓰지 않는 메뉴를 보여줘 교육 자료와 시스템 개선의 근거가 됩니다.</span></p>
+          <p><b>사용 기록은 교육과 시스템 개선에도 활용할 수 있습니다.</b><span>자주 쓰는 기능과 반복해서 헤매는 구간을 찾아 개선 우선순위를 정합니다.</span></p>
         </div>
-        <p className="privacy-note">입력값, 문서 내용과 개인별 성과는 업무 지도에 저장하지 않습니다.</p>
       </section>
 
       <section className="platform-section">
         <div className="platform-heading">
-          <h2>웹에서 검증하고,<br />사내 실행 프로그램으로 확장합니다.</h2>
-          <p>화면 요소를 읽는 방법은 달라도 결과는 같은 업무 지도에 저장됩니다.</p>
+          <h2>웹에서 시작해<br />사내 실행 프로그램까지 확장할 수 있습니다.</h2>
+          <p>웹과 실행 프로그램의 버튼과 메뉴를 같은 방식으로 정리합니다.</p>
         </div>
         <div className="platform-list">
           <article>
             <Globe2 size={22} />
-            <div><span>현재 POC · 구현됨</span><h3>웹 사이트</h3><p>Chrome 확장 프로그램이 DOM과 접근성 이름을 읽어 원본 메뉴를 연결합니다.</p></div>
+            <div><h3>웹 사이트 · 구현 완료</h3><p>Chrome 확장 프로그램이 화면의 버튼과 메뉴를 읽어 필요한 기능을 찾습니다.</p></div>
           </article>
           <article>
             <AppWindow size={22} />
-            <div><span>다음 단계 · 확장 설계</span><h3>사내 실행 프로그램</h3><p>Windows UI Automation과 macOS Accessibility API로 버튼과 화면 이동을 같은 형식으로 수집합니다.</p></div>
+            <div><h3>사내 실행 프로그램 · 확장 예정</h3><p>운영체제의 접근성 기능으로 사내 프로그램의 버튼과 메뉴도 파악할 수 있습니다.</p></div>
           </article>
         </div>
       </section>
 
       <section className="final-cta-section">
         <div>
-          <h2>42개 메뉴가<br /><span>3단계가 되는 순간을 보세요.</span></h2>
+          <h2>42개의 복잡한 메뉴가<br /><span>3단계로 바뀌는 마법을 경험해보세요.</span></h2>
         </div>
         <button className="final-cta" onClick={onDemo}>
-          <AppWindow size={21} /> 작동하는 POC 열기 <ArrowRight size={19} />
+          <AppWindow size={21} /> 데모 체험하기 <ArrowRight size={19} />
         </button>
       </section>
 
       <footer>
         <span className="wordmark"><i className="wordmark-dot" /> 여기만</span>
-        <p><Route size={13} /> 필요한 메뉴만 보여주는 업무 AI</p>
         <small>2026 SK AI Hackathon · AI Idea League</small>
       </footer>
     </main>

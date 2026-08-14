@@ -2,10 +2,10 @@
 
 # 여기만
 
-### 복잡한 사내 시스템에서 필요한 메뉴만 보여줍니다.
+### 필요한 메뉴만 보여주는, 여기만
 
-AI가 화면의 버튼·링크·메뉴와 실제 이용 경로를 업무별로 정리합니다.<br />
-최종 선택과 실행은 사용자가 원본 화면에서 직접 진행합니다.
+업무의 병목은 필요한 기능을 찾고 익히는 시간입니다.<br />
+여기만은 42개의 복잡한 메뉴를 필요한 3단계로 정리합니다.
 
 [실행 데모](https://stpcoder.github.io/yogiman-ai/#/demo) · [전체 영상](https://github.com/stpcoder/yogiman-ai/releases/download/v0.2.1/yogiman-demo.mp4) · [확장 프로그램 다운로드](https://github.com/stpcoder/yogiman-ai/releases/latest)
 
