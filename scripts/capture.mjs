@@ -84,6 +84,8 @@ async function verifyLanding() {
   await desktop.goto(`${baseUrl}/`, { waitUntil: 'networkidle' })
   await desktop.screenshot({ path: 'qa/screenshots/landing-desktop.png', fullPage: true })
   assert.equal(await desktop.locator('h1').filter({ hasText: '필요한 메뉴만 보여줍니다' }).count(), 1)
+  assert.equal(await desktop.locator('video[aria-label="여기만 회원 해지 POC 데모 영상"]').count(), 1)
+  assert.match(await desktop.locator('video source').getAttribute('src'), /yogiman-demo.*\.mp4/)
   assert.deepEqual(pageErrors, [])
   await desktop.close()
 

@@ -15,6 +15,8 @@ import {
   ShieldCheck,
   UserRound,
 } from 'lucide-react'
+import demoVideo from '../qa/video/yogiman-demo.mp4?url'
+import demoPoster from '../qa/screenshots/demo-context-inference.png?url'
 
 type LandingProps = {
   onDemo: () => void
@@ -57,7 +59,7 @@ export function Landing({ onDemo }: LandingProps) {
           여기만
         </button>
         <div className="nav-links">
-          <a href="#problem">문제</a>
+          <a href="#demo-video">데모 영상</a>
           <a href="#solution">해결 방식</a>
           <a href="#learning">업무 지도</a>
           <button className="nav-demo" onClick={onDemo}>
@@ -80,8 +82,8 @@ export function Landing({ onDemo }: LandingProps) {
             <button className="primary-cta" onClick={onDemo}>
               회원 해지 데모 보기 <Play size={17} fill="currentColor" />
             </button>
-            <a className="text-cta" href="#solution">
-              작동 원리 보기 <ArrowRight size={16} />
+            <a className="text-cta" href="#demo-video">
+              80초 영상 보기 <ArrowRight size={16} />
             </a>
           </div>
           <p className="security-caption">
@@ -153,6 +155,22 @@ export function Landing({ onDemo }: LandingProps) {
           </div>
           <div className="human-badge"><MousePointer2 size={16} /> 최종 클릭은 사용자</div>
         </div>
+      </section>
+
+      <section className="demo-video-section" id="demo-video">
+        <div className="demo-video-heading">
+          <h2>복잡한 화면이 3단계로<br />정리되는 과정을 확인하세요.</h2>
+          <p>
+            사이트 탐색부터 회원 해지 목적 발견, 원본 약관 확인과 최종 신청까지 전체 POC 흐름을 80초에 담았습니다.
+          </p>
+        </div>
+        <div className="demo-video-frame">
+          <video controls playsInline preload="metadata" poster={demoPoster} width="1440" height="900" aria-label="여기만 회원 해지 POC 데모 영상">
+            <source src={demoVideo} type="video/mp4" />
+            브라우저가 MP4 영상 재생을 지원하지 않습니다.
+          </video>
+        </div>
+        <p className="demo-video-note"><ShieldCheck size={15} /> 영상에서도 약관 확인과 최종 신청은 사용자가 직접 진행합니다.</p>
       </section>
 
       <section className="friction-section" id="problem">
