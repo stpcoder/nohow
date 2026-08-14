@@ -83,7 +83,7 @@ async function verifyLanding() {
   desktop.on('pageerror', (error) => pageErrors.push(error.message))
   await desktop.goto(`${baseUrl}/`, { waitUntil: 'networkidle' })
   await desktop.screenshot({ path: 'qa/screenshots/landing-desktop.png', fullPage: true })
-  assert.equal(await desktop.locator('h1').filter({ hasText: '방금 누른 메뉴로' }).count(), 1)
+  assert.equal(await desktop.locator('h1').filter({ hasText: '필요한 메뉴만 보여줍니다' }).count(), 1)
   assert.deepEqual(pageErrors, [])
   await desktop.close()
 
@@ -148,7 +148,7 @@ async function recordWalkthrough() {
   await installCaptureEffects(page)
   await pause(page, 3000)
 
-  const demoButton = page.getByRole('button', { name: /3분 데모 시작/ })
+  const demoButton = page.getByRole('button', { name: /회원 해지 데모 보기/ })
   await clickWithFocus(page, demoButton, { moveDuration: 1100, holdAfter: 900 })
   await pause(page, 2600)
 

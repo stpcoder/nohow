@@ -1,17 +1,19 @@
 import {
   ArrowRight,
-  Bot,
+  AppWindow,
   Check,
   ChevronRight,
-  AppWindow,
-  Circle,
+  Database,
+  ExternalLink,
+  GitMerge,
+  Globe2,
+  Monitor,
   MousePointer2,
   Play,
+  Route,
   ScanSearch,
   ShieldCheck,
   UserRound,
-  GitMerge,
-  Route,
 } from 'lucide-react'
 
 type LandingProps = {
@@ -25,6 +27,27 @@ const legacyRows = [
   ['WF-3881', '증명서 발급', '완료'],
 ]
 
+const noisyMenus = [
+  '복지 포인트',
+  '제휴 복지몰',
+  '경조사 지원',
+  '휴양시설',
+  '건강검진',
+  '학자금 지원',
+  '회원관리',
+  '결재선 관리',
+  '증명서 발급',
+  '비용 정산',
+  '자산 반납',
+  '권한 신청',
+]
+
+const focusedSteps = [
+  ['1', '소멸 예정 포인트 확인'],
+  ['2', '탈퇴 약관 읽고 동의'],
+  ['3', '해지 사유 선택 후 직접 신청'],
+]
+
 export function Landing({ onDemo }: LandingProps) {
   return (
     <main className="landing">
@@ -34,8 +57,9 @@ export function Landing({ onDemo }: LandingProps) {
           여기만
         </button>
         <div className="nav-links">
-          <a href="#why">왜 여기만인가</a>
-          <a href="#how">작동 방식</a>
+          <a href="#problem">문제</a>
+          <a href="#solution">해결 방식</a>
+          <a href="#learning">업무 지도</a>
           <button className="nav-demo" onClick={onDemo}>
             데모 열기 <ArrowRight size={15} />
           </button>
@@ -44,25 +68,24 @@ export function Landing({ onDemo }: LandingProps) {
 
       <section className="hero-section">
         <div className="hero-copy hero-reveal">
-          <p className="hero-kicker">AI IDEA LEAGUE · WORKING POC</p>
           <h1>
-            <span>방금 누른 메뉴로</span>
-            <br />하려던 일을 찾습니다.
+            복잡한 사내 시스템에서
+            <br /><span>필요한 메뉴만<br className="mobile-break" /> 보여줍니다.</span>
           </h1>
           <p className="hero-description">
-            여기만은 최근에 누른 메뉴를 사이트의 업무 지도와 대조해 지금 필요한 원본 기능을 보여줍니다.
-            약관 확인과 최종 실행은 사용자가 직접 진행합니다.
+            여기만은 화면의 버튼·링크·메뉴와 실제 이용 경로를 업무별로 정리합니다. AI는 목적에 맞는
+            원본 메뉴를 추천하고, 약관 확인과 최종 실행은 사용자가 직접 합니다.
           </p>
           <div className="hero-actions">
             <button className="primary-cta" onClick={onDemo}>
-              3분 데모 시작 <Play size={17} fill="currentColor" />
+              회원 해지 데모 보기 <Play size={17} fill="currentColor" />
             </button>
-            <a className="text-cta" href="#how">
-              어떻게 다른가요 <ArrowRight size={16} />
+            <a className="text-cta" href="#solution">
+              작동 원리 보기 <ArrowRight size={16} />
             </a>
           </div>
           <p className="security-caption">
-            <ShieldCheck size={15} /> 가상 데이터만 사용한 보안 친화적 시연 환경
+            <ShieldCheck size={15} /> AI는 실행하지 않습니다. 원본 버튼은 사용자가 직접 클릭합니다.
           </p>
         </div>
 
@@ -110,93 +133,125 @@ export function Landing({ onDemo }: LandingProps) {
                   <span className="mini-brand"><i /> 여기만</span>
                   <span className="connected"><i /> 연결됨</span>
                 </div>
-              <div className="preview-trace">
-                <div className="preview-trace-head"><small>최근 이동 경로</small><b>3/5</b></div>
-                {['복지 포인트', '제휴 복지몰', '회원관리'].map((item, index) => (
-                  <p key={item}><i>{index + 1}</i><span>{item}<small>최근 클릭</small></span><Check size={12} /></p>
-                ))}
-              </div>
-              <div className="preview-intersection"><GitMerge size={13} /> 최근 메뉴 3개가 회원 해지와 연결됨</div>
+                <div className="preview-trace">
+                  <div className="preview-trace-head"><small>최근 이동 경로</small><b>3/5</b></div>
+                  {['복지 포인트', '제휴 복지몰', '회원관리'].map((item, index) => (
+                    <p key={item}><i>{index + 1}</i><span>{item}<small>사용자가 클릭</small></span><Check size={12} /></p>
+                  ))}
+                </div>
+                <div className="preview-intersection"><GitMerge size={13} /> 42개 메뉴에서 회원 해지 업무를 찾음</div>
                 <div className="preview-result">
-                  <div className="result-label"><ScanSearch size={14} /> 사이트 업무 지도</div>
+                  <div className="result-label"><ScanSearch size={14} /> 필요한 메뉴</div>
                   <h3>제휴 복지몰 회원 해지</h3>
-                  <p>복리후생 › 제휴 복지몰 › 회원관리 경로에서 찾았습니다.</p>
+                  <p>원본 화면의 42개 메뉴를 필요한 3단계로 정리했습니다.</p>
                   <div className="mini-step"><span>1</span><p><b>소멸 예정 포인트 확인</b><small>12,480 P</small></p><Check size={15} /></div>
-                  <div className="mini-step active"><span>2</span><p><b>약관 읽고 동의</b><small>사람이 직접 확인해요</small></p><MousePointer2 size={15} /></div>
-                  <button className="preview-action">찾던 업무가 맞아요 <ArrowRight size={14} /></button>
+                  <div className="mini-step active"><span>2</span><p><b>탈퇴 약관 읽고 동의</b><small>사용자가 직접 확인합니다</small></p><MousePointer2 size={15} /></div>
+                  <button className="preview-action">원본 메뉴 안내 <ArrowRight size={14} /></button>
                 </div>
               </div>
             </div>
           </div>
-          <div className="human-badge"><MousePointer2 size={16} /> 사람의 클릭</div>
+          <div className="human-badge"><MousePointer2 size={16} /> 최종 클릭은 사용자</div>
         </div>
       </section>
 
-      <section className="statement-section" id="why">
-        <p className="section-index">01 / 관점의 전환</p>
-        <div className="statement-copy">
-          <h2>최근에 누른 메뉴를 보면<br />찾는 업무를 알 수 있습니다.</h2>
+      <section className="friction-section" id="problem">
+        <div className="friction-copy">
+          <h2>전산 업무의 병목은<br />기능을 찾는 시간입니다.</h2>
           <p>
-            사용자는 필요한 화면을 찾으며 이미 관련 메뉴를 누릅니다. 여기만은 그 메뉴를 사이트의 업무 지도와
-            비교합니다. 같은 업무에 연결된 메뉴가 모이면 업무 이름과 처리 순서를 보여줍니다. 약관 동의와 최종
-            신청은 사용자가 직접 진행합니다.
+            시스템이 늘고 화면이 바뀔 때마다 사용자는 메뉴 위치와 처리 순서를 다시 익힙니다.
+            이 탐색 비용은 신규 입사자에게만 생기지 않습니다. 가끔 쓰는 업무 앞에서는 숙련자도 같은 메뉴를 다시 찾습니다.
           </p>
         </div>
-        <div className="handoff-line" aria-label="AI와 사람의 역할 분담">
-          <div className="role role-ai">
-            <Bot size={24} />
-            <small>여기만</small>
-            <strong>업무 찾기 · 원본 위치 안내</strong>
-          </div>
-          <div className="baton"><span>HAND<br />OFF</span><ArrowRight size={28} /></div>
-          <div className="role role-human">
-            <UserRound size={24} />
-            <small>사용자</small>
-            <strong>약관 확인 · 입력 · 최종 실행</strong>
-          </div>
+        <div className="friction-proof">
+          <strong>1,100회+</strong>
+          <p>운영지원 인력이 하루 동안 업무 앱을 전환한 횟수입니다.</p>
+          <a href="https://www.pega.com/about/news/press-releases/research-reveals-employees-switch-apps-over-1100-times-day" target="_blank" rel="noreferrer">
+            Pega, 약 500만 시간 데스크톱 활동 분석 <ExternalLink size={13} />
+          </a>
         </div>
       </section>
 
-      <section className="how-section" id="how">
-        <div className="how-heading">
-          <p className="section-index">02 / 작동 방식</p>
-          <h2>최근 이동 경로에서<br />업무를 찾습니다.</h2>
+      <section className="focus-section" id="solution">
+        <div className="focus-heading">
+          <h2>42개 메뉴에서<br />필요한 3단계만 남깁니다.</h2>
+          <p>
+            여기만은 원본 시스템을 바꾸지 않습니다. AI가 목적과 관련된 기능을 찾아 여기만 패널에 정리하고,
+            사용자가 누를 원본 버튼의 위치를 안내합니다.
+          </p>
         </div>
-        <div className="how-rail">
-          <article>
-            <span>1</span>
-            <div><h3>사이트의 업무 지도를 만듭니다</h3><p>메뉴, 버튼, 화면 이동, 선행 조건을 연결해 실제 업무가 어디에서 시작되고 끝나는지 정리합니다.</p></div>
-          </article>
-          <article>
-            <span>2</span>
-            <div><h3>최근에 누른 메뉴를 확인합니다</h3><p>현재 화면과 최근 메뉴 이름만 이 탭에 보관합니다. 입력값과 문서 내용은 수집하지 않습니다.</p></div>
-          </article>
-          <article>
-            <span>3</span>
-            <div><h3>찾은 이유를 함께 보여줍니다</h3><p>어떤 메뉴가 업무와 연결됐는지 보여주고, 확인된 원본 약관과 실행 버튼으로 안내합니다.</p></div>
-          </article>
+
+        <div className="focus-compare" aria-label="원본 시스템과 여기만 화면 비교">
+          <div className="menu-noise">
+            <div className="compare-title"><span>원본 시스템</span><b>42개 메뉴</b></div>
+            <div className="noise-list">
+              {noisyMenus.map((menu) => <span key={menu}>{menu}</span>)}
+              <span className="more-menus">외 30개</span>
+            </div>
+          </div>
+          <div className="compare-arrow"><ArrowRight size={24} /></div>
+          <div className="menu-focus">
+            <div className="compare-title"><span>여기만</span><b>3단계</b></div>
+            <h3>제휴 복지몰 회원 해지</h3>
+            <div className="focus-step-list">
+              {focusedSteps.map(([number, label]) => (
+                <p key={number}><i>{number}</i><span>{label}</span></p>
+              ))}
+            </div>
+          </div>
         </div>
+
+        <div className="control-policy">
+          <div><ScanSearch size={22} /><p><small>여기만</small><b>메뉴 분석 · 업무 추천 · 원본 위치 안내</b></p></div>
+          <ArrowRight className="policy-arrow" size={24} />
+          <div><UserRound size={22} /><p><small>사용자</small><b>약관 확인 · 값 입력 · 최종 버튼 클릭</b></p></div>
+        </div>
+        <p className="control-note">AI가 체크박스나 신청 버튼을 대신 누르지 않아 오작동과 과도한 권한 위임 위험을 줄입니다.</p>
       </section>
 
-      <section className="access-section">
-        <div className="access-mark" aria-hidden="true">
-          <Circle /><Circle /><Circle />
+      <section className="learning-section" id="learning">
+        <div className="learning-heading">
+          <h2>사용 경로가 쌓일수록<br />업무 지도가 정확해집니다.</h2>
+          <p>
+            여러 사용자가 실제로 거친 메뉴 순서를 개인 식별자 없이 합산합니다. AI는 반복되는 경로를 업무 후보로 묶고,
+            시스템 운영자가 확인한 경로만 사용자에게 배포합니다.
+          </p>
         </div>
-        <p className="section-index">03 / 확장 가능성</p>
-        <h2>복잡한 화면을<br />각자에게 맞게 정리합니다.</h2>
-        <p>
-          화면 오른쪽에 큰 글씨, 쉬운 설명, 필요한 기능만 표시할 수 있습니다. 기존 시스템을 교체하지 않고 사내 포털,
-          공공 웹서비스와 모바일 웹에 같은 방식으로 적용할 수 있습니다.
-        </p>
-        <div className="access-tags">
-          <span>사내 레거시 시스템</span><span>공공 웹서비스</span><span>시니어 접근성</span><span>모바일·앱 확장</span>
+
+        <div className="learning-flow" aria-label="업무 지도가 만들어지는 과정">
+          <article><span>1</span><Monitor size={21} /><h3>화면 구조를 읽습니다</h3><p>버튼, 링크, 메뉴 이름과 화면 이동을 연결합니다.</p></article>
+          <article><span>2</span><Database size={21} /><h3>이용 경로를 합칩니다</h3><p>여러 사용자가 반복해서 거친 메뉴 순서를 집계합니다.</p></article>
+          <article><span>3</span><GitMerge size={21} /><h3>업무 후보로 묶습니다</h3><p>AI가 공통 경로와 완료 지점을 같은 업무로 정리합니다.</p></article>
+          <article><span>4</span><ShieldCheck size={21} /><h3>운영자가 승인합니다</h3><p>권한과 선행 조건을 확인한 지도만 배포합니다.</p></article>
+        </div>
+
+        <div className="learning-insight">
+          <Route size={25} />
+          <p><b>업무 지도는 사용 안내에서 끝나지 않습니다.</b><span>자주 쓰는 경로, 반복해서 되돌아가는 구간, 거의 쓰지 않는 메뉴를 보여줘 교육 자료와 시스템 개선의 근거가 됩니다.</span></p>
+        </div>
+        <p className="privacy-note">입력값, 문서 내용과 개인별 성과는 업무 지도에 저장하지 않습니다.</p>
+      </section>
+
+      <section className="platform-section">
+        <div className="platform-heading">
+          <h2>웹에서 검증하고,<br />사내 실행 프로그램으로 확장합니다.</h2>
+          <p>화면 요소를 읽는 방법은 달라도 결과는 같은 업무 지도에 저장됩니다.</p>
+        </div>
+        <div className="platform-list">
+          <article>
+            <Globe2 size={22} />
+            <div><span>현재 POC · 구현됨</span><h3>웹 사이트</h3><p>Chrome 확장 프로그램이 DOM과 접근성 이름을 읽어 원본 메뉴를 연결합니다.</p></div>
+          </article>
+          <article>
+            <AppWindow size={22} />
+            <div><span>다음 단계 · 확장 설계</span><h3>사내 실행 프로그램</h3><p>Windows UI Automation과 macOS Accessibility API로 버튼과 화면 이동을 같은 형식으로 수집합니다.</p></div>
+          </article>
         </div>
       </section>
 
       <section className="final-cta-section">
         <div>
-          <p className="section-index">직접 확인해 보세요</p>
-          <h2>세 번의 클릭으로<br /><span>필요한 업무를 찾습니다.</span></h2>
+          <h2>42개 메뉴가<br /><span>3단계가 되는 순간을 보세요.</span></h2>
         </div>
         <button className="final-cta" onClick={onDemo}>
           <AppWindow size={21} /> 작동하는 POC 열기 <ArrowRight size={19} />
@@ -205,7 +260,7 @@ export function Landing({ onDemo }: LandingProps) {
 
       <footer>
         <span className="wordmark"><i className="wordmark-dot" /> 여기만</span>
-        <p><Route size={13} /> 최근 이동 경로에서 필요한 업무를 찾습니다.</p>
+        <p><Route size={13} /> 필요한 메뉴만 보여주는 업무 AI</p>
         <small>2026 SK AI Hackathon · AI Idea League</small>
       </footer>
     </main>
