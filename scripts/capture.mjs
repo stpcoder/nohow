@@ -72,20 +72,48 @@ async function typeWithCursor(page, locator, value, options = {}) {
   await pause(page, holdAfter)
 }
 
+async function expectCaptureTarget(page, instruction) {
+  assert.equal(await page.locator('.nh-capture-next b').innerText(), instruction)
+  assert.equal(await page.locator('.nh-capture-target').count(), 1)
+}
+
 async function completeCaptureWork(page, paced = false) {
   const click = (locator, holdAfter = 500) => paced ? clickWithFocus(page, locator, { moveDuration: 950, holdAfter }) : locator.click()
   await click(page.getByRole('button', { name: '매뉴얼 만들기', exact: true }), paced ? 1700 : 0)
+  await expectCaptureTarget(page, '보완 요청 메일을 클릭해 보세요.')
   await click(page.getByRole('button', { name: /TR-2026-0812 출장비 정산/ }), paced ? 2500 : 0)
+  await expectCaptureTarget(page, '아래 작업표시줄에서 Excel을 열어 보세요.')
   await click(page.getByRole('button', { name: 'Excel 열기' }), paced ? 1500 : 0)
+  await expectCaptureTarget(page, 'TR-2026-0812 정산 행을 클릭해 보세요.')
   await click(page.locator('.nh-sheet tbody tr').filter({ hasText: 'TR-2026-0812' }), paced ? 2200 : 0)
+  await expectCaptureTarget(page, '아래 작업표시줄에서 파일 탐색기를 열어 보세요.')
   await click(page.getByRole('button', { name: '파일 탐색기 열기' }), paced ? 1500 : 0)
+  await expectCaptureTarget(page, '숙박_영수증.pdf를 클릭해 보세요.')
   await click(page.getByRole('button', { name: /숙박_영수증.pdf/ }), paced ? 2200 : 0)
+  await expectCaptureTarget(page, '아래 작업표시줄에서 통합업무포털을 열어 보세요.')
   await click(page.getByRole('button', { name: '통합업무포털 열기' }), paced ? 1700 : 0)
+  await expectCaptureTarget(page, '파일 선택 버튼을 클릭해 보세요.')
+  const uploadLayout = await page.locator('.nh-portal-form > label').first().evaluate((element) => {
+    const field = element.querySelector('div')
+    const button = field?.querySelector('button')
+    const fileName = field?.querySelector('span')
+    return {
+      overflow: element.scrollWidth > element.clientWidth,
+      buttonWrap: button ? button.scrollHeight > button.clientHeight : true,
+      fileNameWidth: Math.round(fileName?.getBoundingClientRect().width || 0),
+    }
+  })
+  assert.equal(uploadLayout.overflow, false)
+  assert.equal(uploadLayout.buttonWrap, false)
+  assert.ok(uploadLayout.fileNameWidth > 200, `file name width is too narrow: ${uploadLayout.fileNameWidth}px`)
   await click(page.locator('.nh-portal-form label button'), paced ? 1600 : 0)
+  await expectCaptureTarget(page, '보완 사유를 입력해 보세요.')
   const reason = page.getByRole('textbox', { name: '보완 사유' })
   if (paced) await typeWithCursor(page, reason, '숙박 영수증을 추가 첨부합니다.', { delay: 55, holdAfter: 1200 })
   else await reason.fill('숙박 영수증을 추가 첨부합니다.')
+  await expectCaptureTarget(page, '보완 자료 제출 버튼을 클릭해 보세요.')
   await click(page.getByRole('button', { name: '보완 자료 제출', exact: true }), paced ? 2500 : 0)
+  await expectCaptureTarget(page, '기록을 종료하고 매뉴얼을 만들어 보세요.')
   await click(page.getByRole('button', { name: '기록 종료하고 매뉴얼 만들기' }), paced ? 1200 : 0)
 }
 
