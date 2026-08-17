@@ -47,7 +47,7 @@ const capabilities = [
   { icon: Monitor, title: '평소처럼 일하면 업무 과정을 기록합니다.' },
   { icon: Sparkles, title: 'AI가 행동을 의미 있는 업무 단계로 정리합니다.' },
   { icon: Share2, title: '완성된 매뉴얼을 구성원들과 공유합니다.' },
-  { icon: MousePointer2, title: '실제 업무 화면에서 다음 행동을 안내합니다.' },
+  { icon: MousePointer2, title: '구성원 누구나 매뉴얼을 따라 업무를 수행합니다.' },
 ]
 
 export function Landing({ onDemo }: { onDemo: () => void }) {
@@ -159,8 +159,7 @@ export function Landing({ onDemo }: { onDemo: () => void }) {
 
       <section className="demo-video-section" id="demo-video">
         <div className="demo-video-heading">
-          <h2>업무 경험이 매뉴얼이 되는 과정을 확인하세요.</h2>
-          <p>메일과 Excel, 파일 탐색기와 사내 시스템을 오가는 NoHow POC입니다.</p>
+          <h2>반복 업무가 매뉴얼이 되는 마법 같은 경험을 확인하세요.</h2>
         </div>
         <div className="demo-video-frame">
           <video controls playsInline preload="auto" poster={nohowDemoPoster} aria-label="NoHow 출장비 정산 보완 POC 데모 영상">
@@ -190,7 +189,7 @@ export function Landing({ onDemo }: { onDemo: () => void }) {
 
       <section className="focus-section" id="solution">
         <div className="focus-heading">
-          <h2>업무를 한 번 수행하면,<br /><span className="accent-line">매뉴얼이 완성됩니다.</span></h2>
+          <h2>한 번만 수행하더라도,<br /><span className="accent-line">매뉴얼이 완성됩니다.</span></h2>
           <p>NoHow가 화면과 클릭, 프로그램 전환을 기록하고 업무 매뉴얼로 정리합니다.</p>
         </div>
 
@@ -247,11 +246,11 @@ export function Landing({ onDemo }: { onDemo: () => void }) {
         <div className="platform-list">
           <article>
             <Globe2 size={22} />
-            <div><h3>웹사이트 업무 기록</h3><p>Chrome 확장 프로그램이 웹사이트의 화면과 UI 요소를 기록하고 실제 화면에서 안내합니다.</p></div>
+            <div><h3>웹사이트 업무 기록</h3><p>Chrome 확장 프로그램이 웹사이트의 업무 과정을 기록하고 안내합니다.</p></div>
           </article>
           <article>
             <AppWindow size={22} />
-            <div><h3>여러 프로그램의 업무 기록</h3><p>사내 프로그램 등 여러 프로그램을 오가는 업무도 하나의 매뉴얼로 기록합니다.</p></div>
+            <div><h3>여러 프로그램의 업무 기록</h3><p>복잡한 사내 프로그램과 여러 앱을 오가는 업무도 하나의 매뉴얼로 기록합니다.</p></div>
           </article>
         </div>
       </section>
