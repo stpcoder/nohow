@@ -83,9 +83,8 @@ async function verifyLanding() {
   desktop.on('pageerror', (error) => pageErrors.push(error.message))
   await desktop.goto(`${baseUrl}/`, { waitUntil: 'networkidle' })
   await desktop.screenshot({ path: 'qa/screenshots/landing-desktop.png', fullPage: true })
-  assert.equal(await desktop.locator('h1').filter({ hasText: '당신의 업무를 위한 마법 같은 툴' }).count(), 1)
-  assert.equal(await desktop.locator('video[aria-label="여기만 회원 해지 POC 데모 영상"]').count(), 1)
-  assert.match(await desktop.locator('video source').getAttribute('src'), /yogiman-demo.*\.mp4/)
+  assert.equal(await desktop.locator('h1').filter({ hasText: '모두의 노하우로 남기세요' }).count(), 1)
+  assert.equal(await desktop.getByText('NoHow', { exact: true }).count() >= 2, true)
   assert.deepEqual(pageErrors, [])
   await desktop.close()
 
