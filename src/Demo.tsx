@@ -62,16 +62,16 @@ function getCapturePrompt({
   reason: string
   submitted: boolean
 }): CapturePrompt {
-  if (!mailOpened) return { text: '보완 요청 메일을 클릭해 보세요.' }
-  if (!rowSelected && activeApp !== 'excel') return { text: '아래 작업표시줄에서 Excel을 열어 보세요.', targetApp: 'excel' }
-  if (!rowSelected) return { text: 'TR-2026-0812 정산 행을 클릭해 보세요.' }
-  if (!fileSelected && activeApp !== 'explorer') return { text: '아래 작업표시줄에서 파일 탐색기를 열어 보세요.', targetApp: 'explorer' }
-  if (!fileSelected) return { text: '숙박_영수증.pdf를 클릭해 보세요.' }
-  if (!attached && activeApp !== 'portal') return { text: '아래 작업표시줄에서 통합업무포털을 열어 보세요.', targetApp: 'portal' }
-  if (!attached) return { text: '파일 선택 버튼을 클릭해 보세요.' }
-  if (!reason.trim()) return { text: '보완 사유를 입력해 보세요.' }
-  if (!submitted) return { text: '보완 자료 제출 버튼을 클릭해 보세요.' }
-  return { text: '기록을 종료하고 매뉴얼을 만들어 보세요.' }
+  if (!mailOpened) return { text: '보완 요청 메일을 클릭해 보실래요?' }
+  if (!rowSelected && activeApp !== 'excel') return { text: '아래 작업표시줄에서 Excel을 열어 보실래요?', targetApp: 'excel' }
+  if (!rowSelected) return { text: 'TR-2026-0812 정산 행을 클릭해 보실래요?' }
+  if (!fileSelected && activeApp !== 'explorer') return { text: '아래 작업표시줄에서 파일 탐색기를 열어 보실래요?', targetApp: 'explorer' }
+  if (!fileSelected) return { text: '숙박_영수증.pdf를 클릭해 보실래요?' }
+  if (!attached && activeApp !== 'portal') return { text: '아래 작업표시줄에서 통합업무포털을 열어 보실래요?', targetApp: 'portal' }
+  if (!attached) return { text: '파일 선택 버튼을 클릭해 보실래요?' }
+  if (!reason.trim()) return { text: '보완 사유를 입력해 보실래요?' }
+  if (!submitted) return { text: '보완 자료 제출 버튼을 클릭해 보실래요?' }
+  return { text: '기록을 종료하고 매뉴얼을 만들어 보실래요?' }
 }
 
 export function Demo({ onExit }: DemoProps) {
@@ -86,6 +86,8 @@ export function Demo({ onExit }: DemoProps) {
   const [submitted, setSubmitted] = useState(false)
   const [query, setQuery] = useState('')
   const [guideStep, setGuideStep] = useState(0)
+  const [showCaptureHint, setShowCaptureHint] = useState(false)
+  const [captureActivity, setCaptureActivity] = useState(0)
 
   const capturePrompt = getCapturePrompt({
     activeApp, mailOpened, rowSelected, fileSelected, attached, reason, submitted,
@@ -96,6 +98,18 @@ export function Demo({ onExit }: DemoProps) {
     const timer = window.setTimeout(() => setPhase('review'), 3200)
     return () => window.clearTimeout(timer)
   }, [phase])
+
+  useEffect(() => {
+    if (phase !== 'capture') return
+    const timer = window.setTimeout(() => setShowCaptureHint(true), 4500)
+    return () => window.clearTimeout(timer)
+  }, [phase, captureActivity])
+
+  const registerCaptureActivity = () => {
+    if (phase !== 'capture') return
+    setShowCaptureHint(false)
+    setCaptureActivity((current) => current + 1)
+  }
 
   const addEvent = (event: string) => setEvents((current) => current.includes(event) ? current : [...current, event])
   const switchApp = (app: WorkApp) => {
@@ -110,6 +124,7 @@ export function Demo({ onExit }: DemoProps) {
   const resetDemo = () => {
     setPhase('welcome'); setActiveApp('mail'); setEvents([]); setMailOpened(false); setRowSelected(false)
     setFileSelected(false); setAttached(false); setReason(''); setSubmitted(false); setQuery(''); setGuideStep(0)
+    setShowCaptureHint(false); setCaptureActivity(0)
   }
   const runGuideAction = (step: number) => {
     if (phase !== 'guide' || guideStep !== step) return
@@ -126,40 +141,40 @@ export function Demo({ onExit }: DemoProps) {
         <p><span>NoHow POC</span> 실제 사내 정보가 아닌 가상 업무 환경입니다.</p>
         <button onClick={resetDemo}>처음부터 보기</button>
       </header>
-      <section className="nh-desktop" aria-label="Windows 업무 환경">
+      <section className="nh-desktop" aria-label="Windows 업무 환경" onPointerDown={registerCaptureActivity} onKeyDown={registerCaptureActivity}>
         <div className="nh-wallpaper-mark"><i /><span>WORKSPACE</span></div>
         <WorkWindow
-          activeApp={activeApp} phase={phase} guideStep={guideStep} mailOpened={mailOpened}
+          activeApp={activeApp} phase={phase} guideStep={guideStep} showCaptureHint={showCaptureHint} mailOpened={mailOpened}
           rowSelected={rowSelected} fileSelected={fileSelected} attached={attached} reason={reason} submitted={submitted}
           onMailOpen={() => { setMailOpened(true); addEvent('보완 요청 메일 열기'); runGuideAction(0) }}
           onRowSelect={() => { setRowSelected(true); addEvent('대상 정산 건 선택'); runGuideAction(1) }}
           onFileSelect={() => { setFileSelected(true); addEvent('숙박 영수증 선택'); runGuideAction(2) }}
           onAttach={() => { setAttached(true); addEvent('보완 자료 첨부'); runGuideAction(3) }}
-          onReasonChange={(value) => { setReason(value); if (value.length > 3) addEvent('보완 사유 입력') }}
+          onReasonChange={(value) => { registerCaptureActivity(); setReason(value); if (value.length > 3) addEvent('보완 사유 입력') }}
           onSubmit={() => {
             if (phase === 'guide') return runGuideAction(4)
             if (!attached || !reason) return
             setSubmitted(true); addEvent('보완 자료 제출 완료')
           }}
         />
-        <NoHowPanel phase={phase} events={events} captureReady={submitted} captureInstruction={capturePrompt.text} query={query} guideStep={guideStep}
+        <NoHowPanel phase={phase} events={events} captureReady={submitted} showCaptureHint={showCaptureHint} captureInstruction={capturePrompt.text} query={query} guideStep={guideStep}
           onStart={startCapture} onStop={() => setPhase('structuring')} onShare={() => setPhase('shared')}
           onContinue={() => { setPhase('library'); setQuery('') }} onQuery={setQuery}
           onOpenManual={() => { setPhase('guide'); setGuideStep(0); setActiveApp('mail') }} />
-        <Taskbar activeApp={activeApp} phase={phase} captureTargetApp={capturePrompt.targetApp} onSwitch={switchApp} />
+        <Taskbar activeApp={activeApp} phase={phase} showCaptureHint={showCaptureHint} captureTargetApp={capturePrompt.targetApp} onSwitch={switchApp} />
       </section>
     </main>
   )
 }
 
-function Taskbar({ activeApp, phase, captureTargetApp, onSwitch }: { activeApp: WorkApp; phase: Phase; captureTargetApp?: WorkApp; onSwitch: (app: WorkApp) => void }) {
+function Taskbar({ activeApp, phase, showCaptureHint, captureTargetApp, onSwitch }: { activeApp: WorkApp; phase: Phase; showCaptureHint: boolean; captureTargetApp?: WorkApp; onSwitch: (app: WorkApp) => void }) {
   const disabled = !['capture', 'welcome'].includes(phase)
   return <nav className="nh-taskbar" aria-label="업무 프로그램">
     <span className="nh-start" aria-hidden="true"><i /><i /><i /><i /></span>
     <button aria-label="Windows 검색"><Search size={18} /></button>
     {(Object.keys(appMeta) as WorkApp[]).map((app) => {
       const Icon = appMeta[app].icon
-      const target = phase === 'capture' && captureTargetApp === app
+      const target = phase === 'capture' && showCaptureHint && captureTargetApp === app
       return <button key={app} disabled={disabled} className={`${activeApp === app ? 'is-active' : ''} ${target ? 'nh-capture-target' : ''}`} onClick={() => onSwitch(app)} aria-label={`${appMeta[app].label} 열기`}><Icon size={20} /></button>
     })}
     <div className="nh-taskbar-time"><b>오후 2:18</b><span>2026-08-18</span></div>
@@ -167,7 +182,7 @@ function Taskbar({ activeApp, phase, captureTargetApp, onSwitch }: { activeApp: 
 }
 
 type WorkWindowProps = {
-  activeApp: WorkApp; phase: Phase; guideStep: number; mailOpened: boolean; rowSelected: boolean
+  activeApp: WorkApp; phase: Phase; guideStep: number; showCaptureHint: boolean; mailOpened: boolean; rowSelected: boolean
   fileSelected: boolean; attached: boolean; reason: string; submitted: boolean
   onMailOpen: () => void; onRowSelect: () => void; onFileSelect: () => void; onAttach: () => void
   onReasonChange: (value: string) => void; onSubmit: () => void
@@ -186,9 +201,9 @@ function WorkWindow(props: WorkWindowProps) {
   </article>
 }
 
-function MailApp({ phase, guideStep, mailOpened, onMailOpen }: WorkWindowProps) {
+function MailApp({ phase, guideStep, showCaptureHint, mailOpened, onMailOpen }: WorkWindowProps) {
   const guided = phase === 'guide' && guideStep === 0
-  const captureTarget = phase === 'capture' && !mailOpened
+  const captureTarget = phase === 'capture' && showCaptureHint && !mailOpened
   return <div className="nh-mail-app">
     <aside className="nh-app-sidebar"><button className="is-selected">받은 편지함 <b>12</b></button><button>중요 편지함</button><button>보낸 편지함</button><button>임시 보관함</button><button>업무 알림</button></aside>
     <section className="nh-mail-list"><div className="nh-app-toolbar"><button>새 메일</button><span>받은 편지함</span><Search size={15} /></div>
@@ -199,9 +214,9 @@ function MailApp({ phase, guideStep, mailOpened, onMailOpen }: WorkWindowProps) 
   </div>
 }
 
-function ExcelApp({ phase, guideStep, rowSelected, onRowSelect }: WorkWindowProps) {
+function ExcelApp({ phase, guideStep, showCaptureHint, rowSelected, onRowSelect }: WorkWindowProps) {
   const guided = phase === 'guide' && guideStep === 1
-  const captureTarget = phase === 'capture' && !rowSelected
+  const captureTarget = phase === 'capture' && showCaptureHint && !rowSelected
   return <div className="nh-excel-app">
     <div className="nh-excel-tabs"><b>파일</b><span>홈</span><span>삽입</span><span>페이지 레이아웃</span><span>수식</span><span>데이터</span><span>검토</span><span>보기</span></div>
     <div className="nh-excel-ribbon"><button>붙여넣기</button><button>복사</button><button>정렬 및 필터</button><button>조건부 서식</button><button>표 서식</button></div>
@@ -216,9 +231,9 @@ function ExcelApp({ phase, guideStep, rowSelected, onRowSelect }: WorkWindowProp
   </div>
 }
 
-function ExplorerApp({ phase, guideStep, fileSelected, onFileSelect }: WorkWindowProps) {
+function ExplorerApp({ phase, guideStep, showCaptureHint, fileSelected, onFileSelect }: WorkWindowProps) {
   const guided = phase === 'guide' && guideStep === 2
-  const captureTarget = phase === 'capture' && !fileSelected
+  const captureTarget = phase === 'capture' && showCaptureHint && !fileSelected
   return <div className="nh-explorer-app">
     <div className="nh-explorer-tools"><button>새로 만들기</button><button>잘라내기</button><button>복사</button><button>붙여넣기</button><button>정렬</button><button>보기</button></div>
     <div className="nh-explorer-address"><button>←</button><button>→</button><p>문서 › 출장비 정산 › 부산 출장</p><label><Search size={14} /><input aria-label="파일 검색" placeholder="부산 출장 검색" /></label></div>
@@ -228,12 +243,12 @@ function ExplorerApp({ phase, guideStep, fileSelected, onFileSelect }: WorkWindo
   </div>
 }
 
-function PortalApp({ phase, guideStep, attached, reason, submitted, onAttach, onReasonChange, onSubmit }: WorkWindowProps) {
+function PortalApp({ phase, guideStep, showCaptureHint, attached, reason, submitted, onAttach, onReasonChange, onSubmit }: WorkWindowProps) {
   const attachGuided = phase === 'guide' && guideStep === 3
   const submitGuided = phase === 'guide' && guideStep === 4
-  const attachCaptureTarget = phase === 'capture' && !attached
-  const reasonCaptureTarget = phase === 'capture' && attached && !reason.trim()
-  const submitCaptureTarget = phase === 'capture' && attached && Boolean(reason.trim()) && !submitted
+  const attachCaptureTarget = phase === 'capture' && showCaptureHint && !attached
+  const reasonCaptureTarget = phase === 'capture' && showCaptureHint && attached && !reason.trim()
+  const submitCaptureTarget = phase === 'capture' && showCaptureHint && attached && Boolean(reason.trim()) && !submitted
   const effectiveAttached = phase === 'guide' ? guideStep >= 4 : attached
   return <div className="nh-portal-app">
     <header><div className="nh-portal-brand"><i /> SK 통합업무포털</div><nav><button>업무</button><button>전자결재</button><button>인사</button><button>비용·자산</button><button>예약·시설</button></nav><span>김노하 님</span></header>
@@ -249,7 +264,7 @@ function PortalApp({ phase, guideStep, attached, reason, submitted, onAttach, on
   </div>
 }
 
-type NoHowPanelProps = { phase: Phase; events: string[]; captureReady: boolean; captureInstruction: string; query: string; guideStep: number; onStart: () => void; onStop: () => void; onShare: () => void; onContinue: () => void; onQuery: (value: string) => void; onOpenManual: () => void }
+type NoHowPanelProps = { phase: Phase; events: string[]; captureReady: boolean; showCaptureHint: boolean; captureInstruction: string; query: string; guideStep: number; onStart: () => void; onStop: () => void; onShare: () => void; onContinue: () => void; onQuery: (value: string) => void; onOpenManual: () => void }
 
 function NoHowPanel(props: NoHowPanelProps) {
   const { phase } = props
@@ -261,7 +276,7 @@ function NoHowPanel(props: NoHowPanelProps) {
   return <aside className={`nh-panel ${phase === 'guide' ? 'is-guide' : ''}`} aria-label="NoHow 패널">
     <div className="nh-panel-header"><span className="nh-brand"><i /> NoHow</span>{phase === 'capture' && <span className="nh-recording"><i /> REC</span>}{phase === 'guide' && <span className="nh-guide-mode">LIVE GUIDE</span>}</div>
     {phase === 'welcome' && <div className="nh-panel-welcome"><div className="nh-welcome-visual"><Monitor size={35} /><span><MousePointer2 size={19} /></span></div><p className="nh-eyebrow">WORK CAPTURE</p><h1>평소처럼 일하면<br />매뉴얼이 완성됩니다.</h1><p>메일과 Excel, 파일 탐색기와 사내 프로그램을 오가는 업무도 하나의 과정으로 기록합니다.</p><button className="nh-primary" onClick={props.onStart}><Play size={17} fill="currentColor" /> 매뉴얼 만들기</button><div className="nh-mini-flow"><span>기록</span><ChevronRight size={13} /><span>AI 정리</span><ChevronRight size={13} /><span>공유</span><ChevronRight size={13} /><span>안내</span></div></div>}
-    {phase === 'capture' && <div className="nh-panel-capture"><p className="nh-eyebrow">업무 기록 중</p><h2>출장비 정산 보완</h2><div className="nh-event-total"><strong>{Math.max(4, props.events.length * 3 + 1)}</strong><span>개의 화면과 행동을<br />기록하고 있습니다.</span></div><div className="nh-app-chips">{Object.entries(appMeta).map(([key, meta]) => { const Icon = meta.icon; return <span key={key}><Icon size={12} /> {meta.label}</span> })}</div><div className="nh-capture-next"><MousePointer2 size={17} /><p><span>다음 작업</span><b>{props.captureInstruction}</b></p></div><div className="nh-recent-events"><b>최근 기록</b>{props.events.slice(-4).reverse().map((event, index) => <p key={event} className={index === 0 ? 'current' : ''}>{index === 0 ? <span /> : <Check size={13} />} {event}</p>)}</div><button className={`nh-primary ${props.captureReady ? 'nh-capture-target nh-capture-target-panel' : ''}`} disabled={!props.captureReady} onClick={props.onStop}>{props.captureReady ? '기록 종료하고 매뉴얼 만들기' : '업무를 완료하면 기록을 종료할 수 있습니다.'}</button></div>}
+    {phase === 'capture' && <div className="nh-panel-capture"><p className="nh-eyebrow">업무 기록 중</p><h2>출장비 정산 보완</h2><div className="nh-event-total"><strong>{Math.max(4, props.events.length * 3 + 1)}</strong><span>개의 화면과 행동을<br />기록하고 있습니다.</span></div><div className="nh-app-chips">{Object.entries(appMeta).map(([key, meta]) => { const Icon = meta.icon; return <span key={key}><Icon size={12} /> {meta.label}</span> })}</div>{props.showCaptureHint ? <div className="nh-capture-next"><MousePointer2 size={17} /><p><span>도움이 필요하신가요?</span><b>{props.captureInstruction}</b></p></div> : <div className="nh-capture-status"><Monitor size={17} /><p><span>업무 과정 기록 중</span><b>평소처럼 직접 업무를 수행해 주세요.</b></p></div>}<div className="nh-recent-events"><b>최근 기록</b>{props.events.slice(-4).reverse().map((event, index) => <p key={event} className={index === 0 ? 'current' : ''}>{index === 0 ? <span /> : <Check size={13} />} {event}</p>)}</div><button className={`nh-primary ${props.captureReady && props.showCaptureHint ? 'nh-capture-target nh-capture-target-panel' : ''}`} disabled={!props.captureReady} onClick={props.onStop}>{props.captureReady ? '기록 종료하고 매뉴얼 만들기' : '업무를 완료하면 기록을 종료할 수 있습니다.'}</button></div>}
     {phase === 'guide' && <div className="nh-panel-guide"><p className="nh-eyebrow">출장비 정산 보완</p><h2>{props.guideStep + 1} / {manualSteps.length}</h2><div className="nh-guide-card"><span>{manualSteps[props.guideStep].app}</span><h3>{manualSteps[props.guideStep].title}</h3><p>{manualSteps[props.guideStep].detail}</p></div><div className="nh-guide-progress">{manualSteps.map((step, index) => <i key={step.title} className={index < props.guideStep ? 'done' : index === props.guideStep ? 'active' : ''}>{index < props.guideStep ? <Check size={11} /> : index + 1}</i>)}</div><div className="nh-guide-hint"><MousePointer2 size={16} /><p><b>현재 화면에서 바로 따라 하세요.</b><span>파란색으로 표시된 위치를 직접 선택하면 다음 단계로 이동합니다.</span></p></div></div>}
   </aside>
 }

@@ -1,9 +1,9 @@
 .nh-capture-target {
   position: relative;
   z-index: 6;
-  outline: 3px solid #ef4444 !important;
+  outline: 3px solid #9bc92f !important;
   outline-offset: 3px;
-  box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.14), 0 8px 24px rgba(164, 28, 28, 0.18) !important;
+  box-shadow: 0 0 0 8px rgba(155, 201, 47, 0.14), 0 8px 24px rgba(83, 112, 19, 0.15) !important;
   animation: nhCaptureTargetPulse 1.65s ease-in-out infinite;
 }
 
@@ -13,8 +13,69 @@
 
 @keyframes nhCaptureTargetPulse {
   50% {
-    box-shadow: 0 0 0 13px rgba(239, 68, 68, 0.04), 0 8px 24px rgba(164, 28, 28, 0.16);
+    box-shadow: 0 0 0 12px rgba(155, 201, 47, 0.04), 0 8px 24px rgba(83, 112, 19, 0.13);
   }
+}
+
+.nh-capture-next,
+.nh-capture-status {
+  min-height: 58px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 13px;
+  border-radius: 5px;
+}
+
+.nh-capture-next {
+  border: 1px solid #dcecae;
+  border-left: 4px solid #9bc92f;
+  color: #5f7f17;
+  background: #f8fbea;
+}
+
+.nh-capture-status {
+  border: 1px solid #e2e7ee;
+  border-left: 4px solid #aeb8c8;
+  color: #69768a;
+  background: #f8fafc;
+}
+
+.nh-capture-next > svg,
+.nh-capture-status > svg {
+  flex: none;
+}
+
+.nh-capture-next p,
+.nh-capture-status p {
+  min-width: 0;
+  margin: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.nh-capture-next span {
+  color: #769b20;
+}
+
+.nh-capture-status span {
+  color: #7d8899;
+}
+
+.nh-capture-next span,
+.nh-capture-status span {
+  font-size: 8px;
+  font-weight: 750;
+}
+
+.nh-capture-next b,
+.nh-capture-status b {
+  overflow: hidden;
+  color: #334056;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .nh-portal-form > label {
