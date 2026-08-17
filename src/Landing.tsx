@@ -34,11 +34,11 @@ const capturedEvents = [
 ]
 
 const manualSteps = [
-  '보완 요청 내용을 확인합니다.',
-  '대상 정산 건을 찾습니다.',
-  '누락된 증빙 파일을 준비합니다.',
-  '보완 자료와 사유를 등록합니다.',
-  '제출 결과를 확인합니다.',
+  ['메일', '보완 요청 내용을 확인합니다.'],
+  ['Excel', '대상 정산 건을 찾습니다.'],
+  ['파일 탐색기', '누락된 증빙 파일을 준비합니다.'],
+  ['업무 포털', '보완 자료와 사유를 등록합니다.'],
+  ['업무 포털', '제출 결과를 확인합니다.'],
 ]
 
 const capabilities = [
@@ -89,30 +89,37 @@ export function Landing() {
         <div className="hero-product hero-reveal hero-reveal-late" aria-label="NoHow 업무 기록 화면 미리보기">
           <div className="hero-orbit hero-orbit-one" />
           <div className="hero-orbit hero-orbit-two" />
-          <div className="browser-frame">
-            <div className="browser-bar">
-              <div className="browser-dots"><i /><i /><i /></div>
-              <div className="browser-address">nohow.work / capture</div>
-              <div className="browser-menu">•••</div>
-            </div>
-            <div className="browser-body nohow-browser-body">
-              <div className="nohow-desktop-preview">
-                <div className="desktop-preview-head">
-                  <b>업무 데스크톱</b>
-                  <span><i /> 업무 기록 중 · 00:18</span>
+          <div className="windows-desktop-frame">
+            <div className="windows-desktop-surface">
+              <div className="windows-window window-mail">
+                <div className="windows-titlebar"><span><Mail size={10} /> 메일</span><small>—  □  ×</small></div>
+                <div className="mail-mock-body">
+                  <aside><i /><i /><i /></aside>
+                  <article><small>재무지원팀</small><b>[보완 요청] TR-2026-0812 출장비 정산</b><p>숙박비 증빙이 누락되었습니다.</p></article>
                 </div>
-                <div className="desktop-app-grid">
-                  {workApps.map(({ icon: Icon, name, detail }) => (
-                    <article key={name}>
-                      <Icon size={18} />
-                      <div><b>{name}</b><small>{detail}</small></div>
-                    </article>
-                  ))}
-                </div>
-                <div className="desktop-request-card">
-                  <Mail size={15} />
-                  <div><b>[보완 요청] TR-2026-0812 출장비 정산</b><span>숙박비 증빙을 첨부해 주세요.</span></div>
-                </div>
+              </div>
+
+              <div className="windows-window window-excel">
+                <div className="windows-titlebar excel-titlebar"><span><FileSpreadsheet size={10} /> 출장비_정산내역_8월.xlsx</span><small>—  □  ×</small></div>
+                <div className="excel-ribbon"><b>파일</b><span>홈</span><span>삽입</span><span>데이터</span><span>검토</span></div>
+                <div className="excel-formula">fx · TR-2026-0812</div>
+                <table><tbody>
+                  <tr><th>정산번호</th><th>항목</th><th>금액</th><th>상태</th></tr>
+                  <tr><td>TR-2026-0807</td><td>교통비</td><td>68,000</td><td>완료</td></tr>
+                  <tr className="excel-selected"><td>TR-2026-0812</td><td>숙박비</td><td>184,000</td><td>보완 요청</td></tr>
+                  <tr><td>TR-2026-0816</td><td>식비</td><td>42,000</td><td>검토 중</td></tr>
+                </tbody></table>
+              </div>
+
+              <div className="windows-window window-explorer">
+                <div className="windows-titlebar"><span><FolderOpen size={10} /> 파일 탐색기</span><small>—  □  ×</small></div>
+                <div className="explorer-path">출장비 정산 〉 부산 출장</div>
+                <div className="explorer-files"><span><FolderOpen size={14} /> 교통비</span><span className="selected"><FileText size={14} /> 숙박_영수증.pdf</span></div>
+              </div>
+
+              <div className="windows-window window-portal">
+                <div className="windows-titlebar portal-titlebar"><span><AppWindow size={10} /> 통합업무포털</span><small>—  □  ×</small></div>
+                <div className="portal-mock-body"><small>비용·자산 〉 개인비용 청구</small><b>정산 보완 요청</b><span>TR-2026-0812</span><button>증빙 첨부</button></div>
               </div>
 
               <aside className="nohow-capture-panel">
@@ -136,6 +143,16 @@ export function Landing() {
                   <button>기록 종료</button>
                 </div>
               </aside>
+
+              <div className="windows-taskbar" aria-hidden="true">
+                <i className="windows-start"><span /><span /><span /><span /></i>
+                <Search size={13} />
+                <Mail size={13} />
+                <FileSpreadsheet size={13} />
+                <FolderOpen size={13} />
+                <AppWindow size={13} />
+                <time>오후 2:18</time>
+              </div>
             </div>
           </div>
         </div>
@@ -143,18 +160,18 @@ export function Landing() {
 
       <section className="friction-section" id="problem">
         <div className="friction-copy">
-          <h2>찾고, 묻고,<br /><span className="accent-line">다시 배우는 시간이 쌓입니다.</span></h2>
-          <p>업무 방법을 찾고 과거 문서를 확인하며 동료에게 다시 물어보는 시간도 매일의 업무가 됩니다.</p>
+          <h2>찾고, 묻고, 다시 배우느라<br /><span className="accent-line">업무 시간이 낭비됩니다.</span></h2>
+          <p>누군가 이미 해결한 업무도 기록이 남지 않으면 같은 탐색과 설명을 반복하게 됩니다.</p>
         </div>
         <div className="friction-data">
           <div className="friction-metrics">
-            <article><strong>1,100회+</strong><p>하루 동안 업무 앱 사이를 오간 횟수</p><sup>1</sup></article>
-            <article><strong>최대 35개</strong><p>한 사람이 업무에 사용하는 핵심 애플리케이션</p><sup>1</sup></article>
-            <article><strong>약 20%</strong><p>정보를 찾고 모으는 데 사용하는 업무시간</p><sup>2</sup></article>
+            <article><strong>1,100회+</strong><p>하루 동안 업무 앱 사이를 오간 횟수</p></article>
+            <article><strong>최대 35개</strong><p>한 사람이 업무에 사용하는 핵심 애플리케이션</p></article>
+            <article><strong>약 20%</strong><p>정보를 찾고 모으는 데 사용하는 업무시간</p></article>
           </div>
           <ol className="metric-sources" aria-label="통계 출처">
-            <li>1) <a href="https://www.pega.com/about/news/press-releases/research-reveals-employees-switch-apps-over-1100-times-day" target="_blank" rel="noreferrer">Pega, 500만 시간의 업무 활동 분석, 2018</a></li>
-            <li>2) <a href="https://www.mckinsey.com/industries/technology-media-and-telecommunications/our-insights/capturing-business-value-with-social-technologies" target="_blank" rel="noreferrer">McKinsey Global Institute, 지식 근로자 업무 분석, 2012</a></li>
+            <li>1) <a href="https://www.pega.com/about/news/press-releases/research-reveals-employees-switch-apps-over-1100-times-day" target="_blank" rel="noreferrer">Pega, 500만 시간의 업무 활동 분석, 2018 · 1,100회+, 최대 35개</a></li>
+            <li>2) <a href="https://www.mckinsey.com/industries/technology-media-and-telecommunications/our-insights/capturing-business-value-with-social-technologies" target="_blank" rel="noreferrer">McKinsey Global Institute, 지식 근로자 업무 분석, 2012 · 약 20%</a></li>
           </ol>
         </div>
       </section>
@@ -162,7 +179,7 @@ export function Landing() {
       <section className="focus-section" id="solution">
         <div className="focus-heading">
           <h2>업무를 한 번 수행하면,<br /><span className="accent-line">매뉴얼이 완성됩니다.</span></h2>
-          <p>NoHow가 화면과 클릭, 프로그램 전환을 기록하고 연속된 행동을 의미 있는 업무 단계로 정리합니다.</p>
+          <p>NoHow가 화면과 클릭, 프로그램 전환을 기록하고 업무 매뉴얼로 정리합니다.</p>
         </div>
 
         <div className="focus-compare" aria-label="업무 기록과 NoHow 매뉴얼 비교">
@@ -179,8 +196,8 @@ export function Landing() {
             <div className="compare-title"><span>NoHow 매뉴얼</span><b>5단계</b></div>
             <h3>출장비 정산 보완</h3>
             <div className="focus-step-list">
-              {manualSteps.map((label, index) => (
-                <p key={label}><i>{index + 1}</i><span>{label}</span></p>
+              {manualSteps.map(([app, label], index) => (
+                <p key={label}><i>{index + 1}</i><span><small>{app}</small><b>{label}</b></span></p>
               ))}
             </div>
           </div>
@@ -213,7 +230,7 @@ export function Landing() {
 
       <section className="platform-section">
         <div className="platform-heading">
-          <h2>웹과 데스크톱을 오가는 업무도<br /><span className="accent-line keep-together">하나의 매뉴얼로 남습니다.</span></h2>
+          <h2>어떤 업무 환경에서도,<br /><span className="accent-line">쉽고 빠르게 매뉴얼을 만들고 공유하세요.</span></h2>
         </div>
         <div className="platform-list">
           <article>
