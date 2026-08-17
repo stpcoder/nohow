@@ -4,7 +4,7 @@
 
 평소처럼 업무를 수행하면 NoHow가 화면과 클릭, 프로그램 전환을 기록해 업무 매뉴얼로 정리합니다. 완성된 매뉴얼은 구성원들과 공유하고, 실제 업무 화면에서 단계별로 따라 할 수 있습니다.
 
-[랜딩 페이지](https://stpcoder.github.io/yogiman-ai/) · [인터랙티브 데모](https://stpcoder.github.io/yogiman-ai/#/demo) · [데모 영상](qa/video/nohow-demo.mp4)
+[랜딩 페이지](https://stpcoder.github.io/nohow/) · [인터랙티브 데모](https://stpcoder.github.io/nohow/#/demo) · [데모 영상](https://stpcoder.github.io/nohow/nohow-demo.mp4)
 
 ![NoHow 데모 시작 화면](qa/screenshots/nohow-demo-start.png)
 

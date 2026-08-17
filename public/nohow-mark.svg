@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>NoHow</title>
+  <path fill="#3157ef" d="M31.5 6C18.5 6 9 15.8 9 28.6c0 15.7 17.1 27.2 21.2 29.7a2.5 2.5 0 0 0 2.6 0C36.9 55.8 54 44.3 54 28.6 54 15.8 44.5 6 31.5 6Z"/>
+  <circle cx="49" cy="13" r="8" fill="#baff38" stroke="#f7f9fc" stroke-width="4"/>
+</svg>

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { mkdir, rename, rm } from 'node:fs/promises'
 import { chromium } from 'playwright'
 
-const baseUrl = (process.env.NOHOW_BASE_URL || 'http://127.0.0.1:4173/yogiman-ai').replace(/\/$/, '')
+const baseUrl = (process.env.NOHOW_BASE_URL || 'http://127.0.0.1:4173/nohow').replace(/\/$/, '')
 const browser = await chromium.launch({ headless: true, executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
 await mkdir('qa/screenshots', { recursive: true })
 await mkdir('qa/video/raw', { recursive: true })
