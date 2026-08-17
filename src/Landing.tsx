@@ -14,6 +14,8 @@ import {
   Share2,
   Sparkles,
 } from 'lucide-react'
+import nohowDemoVideo from '../qa/video/nohow-demo.mp4?url'
+import nohowDemoPoster from '../qa/screenshots/nohow-demo-start.png?url'
 
 const workApps = [
   { icon: Mail, name: '메일', detail: '보완 요청 확인' },
@@ -48,7 +50,7 @@ const capabilities = [
   { icon: MousePointer2, title: '실제 업무 화면에서 다음 행동을 안내합니다.' },
 ]
 
-export function Landing() {
+export function Landing({ onDemo }: { onDemo: () => void }) {
   return (
     <main className="landing">
       <nav className="landing-nav" aria-label="주요 메뉴">
@@ -60,9 +62,7 @@ export function Landing() {
           <a href="#problem">문제</a>
           <a href="#solution">작동 방식</a>
           <a href="#knowledge">조직 지식</a>
-          <a className="nav-demo" href="#solution">
-            NoHow 살펴보기 <ArrowRight size={15} />
-          </a>
+          <button className="nav-demo" onClick={onDemo}>NoHow 체험하기 <ArrowRight size={15} /></button>
         </div>
       </nav>
 
@@ -77,9 +77,7 @@ export function Landing() {
             <span>완성된 업무 경험을 다른 구성원들과 공유하세요.</span>
           </p>
           <div className="hero-actions">
-            <a className="primary-cta" href="#solution">
-              NoHow 작동 방식 보기 <ArrowRight size={17} />
-            </a>
+            <button className="primary-cta" onClick={onDemo}>NoHow 데모 체험하기 <ArrowRight size={17} /></button>
             <a className="text-cta" href="#knowledge">
               주요 기능 확인하기 <ArrowRight size={16} />
             </a>
@@ -158,6 +156,19 @@ export function Landing() {
         </div>
       </section>
 
+      <section className="demo-video-section" id="demo-video">
+        <div className="demo-video-heading">
+          <h2>업무 경험이 매뉴얼이 되는 과정을 확인하세요.</h2>
+          <p>메일과 Excel, 파일 탐색기와 사내 시스템을 오가는 NoHow POC입니다.</p>
+        </div>
+        <div className="demo-video-frame">
+          <video controls playsInline preload="auto" poster={nohowDemoPoster} aria-label="NoHow 출장비 정산 보완 POC 데모 영상">
+            <source src={nohowDemoVideo} type="video/mp4" />
+          </video>
+        </div>
+        <div className="demo-video-note"><span>전체 데모 · 1분 39초</span><button className="nav-demo" onClick={onDemo}>직접 체험하기 <ArrowRight size={14} /></button></div>
+      </section>
+
       <section className="friction-section" id="problem">
         <div className="friction-copy">
           <h2>찾고, 묻고, 다시 배우느라<br /><span className="accent-line">업무 시간이 낭비됩니다.</span></h2>
@@ -204,7 +215,7 @@ export function Landing() {
         </div>
 
         <div className="control-policy">
-          <div><BookOpenCheck size={22} /><p><b>화면과 클릭 위치, 설명과 주의사항을 함께 정리합니다.</b></p></div>
+          <div><BookOpenCheck size={22} /><p><b>기록되지 않은 업무 경험은 조직에 남아 있지 않습니다.</b></p></div>
           <ArrowRight className="policy-arrow" size={24} />
           <div><Share2 size={22} /><p><b>사용자가 확인한 매뉴얼을 구성원들과 공유합니다.</b></p></div>
         </div>

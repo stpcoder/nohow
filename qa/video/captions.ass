@@ -1,29 +1,25 @@
 [Script Info]
-Title: 여기만 POC captions
+Title: NoHow POC captions
 ScriptType: v4.00+
 PlayResX: 1440
 PlayResY: 900
+ScaledBorderAndShadow: yes
 WrapStyle: 2
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,Pretendard,30,&H00FFFFFF,&H000000FF,&H00111824,&HC0111824,-1,0,0,0,100,100,-0.5,0,3,2,0,2,70,70,34,1
+Style: Default,Pretendard,30,&H00FFFFFF,&H000000FF,&H0015171B,&HC815171B,-1,0,0,0,100,100,-0.3,0,3,1,0,2,100,100,44,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-Dialogue: 0,0:00:00.00,0:00:04.30,Default,,0,0,0,,방금 누른 메뉴로 하려던 일을 찾습니다.
-Dialogue: 0,0:00:04.30,0:00:08.80,Default,,0,0,0,,필요한 원본 기능을 한 화면에 정리합니다.
-Dialogue: 0,0:00:08.80,0:00:13.40,Default,,0,0,0,,먼저 사이트의 메뉴와 버튼을 읽습니다.
-Dialogue: 0,0:00:13.40,0:00:18.10,Default,,0,0,0,,업무가 시작되고 끝나는 위치를 정리합니다.
-Dialogue: 0,0:00:18.10,0:00:22.00,Default,,0,0,0,,이제 사용자는 평소처럼 메뉴를 누릅니다.
-Dialogue: 0,0:00:22.00,0:00:26.00,Default,,0,0,0,,먼저 복지 포인트를 확인합니다.
-Dialogue: 0,0:00:26.00,0:00:30.20,Default,,0,0,0,,이어서 제휴 복지몰 메뉴를 살펴봅니다.
-Dialogue: 0,0:00:30.20,0:00:34.70,Default,,0,0,0,,회원관리까지 누르자 해야 할 일이 보입니다.
-Dialogue: 0,0:00:34.70,0:00:38.80,Default,,0,0,0,,세 메뉴가 모두 회원 해지 업무와 연결됩니다.
-Dialogue: 0,0:00:38.80,0:00:43.40,Default,,0,0,0,,업무를 찾은 이유도 함께 보여줍니다.
-Dialogue: 0,0:00:43.40,0:00:48.90,Default,,0,0,0,,회원 해지에 필요한 화면을 세 단계로 정리합니다.
-Dialogue: 0,0:00:48.90,0:00:55.00,Default,,0,0,0,,중요한 약관은 사용자가 직접 읽습니다.
-Dialogue: 0,0:00:55.00,0:01:01.20,Default,,0,0,0,,여기만은 원본 신청 화면까지 안내합니다.
-Dialogue: 0,0:01:01.20,0:01:09.30,Default,,0,0,0,,해지 사유와 동의, 최종 신청은 사람이 직접 진행합니다.
-Dialogue: 0,0:01:09.30,0:01:15.30,Default,,0,0,0,,사용자가 회원 해지 신청을 정상적으로 마쳤습니다.
-Dialogue: 0,0:01:15.30,0:01:20.80,Default,,0,0,0,,사이트 업무 지도를 연결하면 다른 업무에도 적용할 수 있습니다.
+Dialogue: 0,0:00:00.00,0:00:05.50,Default,,0,0,0,,기록되지 않은 업무 경험은 조직에 남아 있지 않습니다.
+Dialogue: 0,0:00:05.50,0:00:12.50,Default,,0,0,0,,매뉴얼 만들기를 누르고 평소처럼 업무를 수행합니다.
+Dialogue: 0,0:00:12.50,0:00:21.50,Default,,0,0,0,,NoHow가 메일과 Excel을 오가는 업무 흐름을 기록합니다.
+Dialogue: 0,0:00:21.50,0:00:32.50,Default,,0,0,0,,파일 탐색기에서 증빙을 찾는 과정도 함께 기록합니다.
+Dialogue: 0,0:00:32.50,0:00:45.50,Default,,0,0,0,,사내 시스템에서 자료를 제출하는 순간까지 기록합니다.
+Dialogue: 0,0:00:45.50,0:00:52.50,Default,,0,0,0,,28개의 화면과 행동을 5개의 업무 단계로 정리합니다.
+Dialogue: 0,0:00:52.50,0:01:00.50,Default,,0,0,0,,각 단계에는 실행할 앱과 화면, 설명이 함께 담깁니다.
+Dialogue: 0,0:01:00.50,0:01:09.50,Default,,0,0,0,,완성된 매뉴얼을 확인하고 구성원들과 공유합니다.
+Dialogue: 0,0:01:09.50,0:01:18.50,Default,,0,0,0,,다른 구성원이 필요한 업무 매뉴얼을 자연어로 검색합니다.
+Dialogue: 0,0:01:18.50,0:01:31.50,Default,,0,0,0,,Live Guide가 실제 업무 화면에서 다음 행동을 안내합니다.
+Dialogue: 0,0:01:31.50,0:01:38.64,Default,,0,0,0,,한 사람의 업무 경험이 모든 구성원의 매뉴얼이 됩니다.

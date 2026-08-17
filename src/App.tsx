@@ -28,6 +28,6 @@ export default function App() {
   return route === 'demo' ? (
     <Demo onExit={() => navigate('landing')} />
   ) : (
-    <Landing />
+    <Landing onDemo={() => navigate('demo')} />
   )
 }

@@ -4,6 +4,7 @@ dist/
 qa/video/raw/
 qa/video/*
 !qa/video/yogiman-demo.mp4
+!qa/video/nohow-demo.mp4
 !qa/video/captions.ass
 qa/screenshots/*
 !qa/screenshots/playground-cover-1200x630.png
@@ -15,5 +16,11 @@ qa/screenshots/*
 !qa/screenshots/demo-original-highlight.png
 !qa/screenshots/demo-success.png
 !qa/screenshots/demo-contact-sheet.png
+!qa/screenshots/nohow-demo-start.png
+!qa/screenshots/nohow-demo-manual.png
+!qa/screenshots/nohow-demo-shared.png
+!qa/screenshots/nohow-demo-success.png
+!qa/screenshots/nohow-demo-contact-sheet.png
+!qa/screenshots/nohow-landing-video-section.png
 releases/*.zip
 *.log

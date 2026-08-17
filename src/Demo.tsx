@@ -1,554 +1,245 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import './demo.css'
 import {
-  AlertTriangle,
+  AppWindow,
   ArrowLeft,
   ArrowRight,
-  Bell,
   Bot,
-  CalendarDays,
   Check,
   CheckCircle2,
-  ChevronDown,
   ChevronRight,
-  CircleHelp,
-  Clock3,
-  ExternalLink,
+  CircleUserRound,
+  FileSpreadsheet,
   FileText,
-  Grid3X3,
-  LayoutList,
-  LockKeyhole,
+  FolderOpen,
+  Mail,
+  Monitor,
   MousePointer2,
-  PanelRightClose,
-  ScanLine,
+  Play,
   Search,
-  ShieldCheck,
+  Share2,
   Sparkles,
-  UserRound,
-  WandSparkles,
-  X,
 } from 'lucide-react'
-import { inferIntent, makeTrace, type IntentId, type IntentMatch, type TraceEvent } from './intent-engine'
 
 type DemoProps = { onExit: () => void }
-type PortalView = 'home' | 'withdraw' | 'reserve'
-type ScanState = 'idle' | 'scanning' | 'ready'
-type Intent = IntentId
+type Phase = 'welcome' | 'capture' | 'structuring' | 'review' | 'shared' | 'library' | 'guide' | 'success'
+type WorkApp = 'mail' | 'excel' | 'explorer' | 'portal'
 
-const scanMessages = [
-  '상단·좌측 메뉴 구조 읽는 중',
-  '클릭 가능한 버튼과 링크 분류 중',
-  '화면 전환 관계를 안전하게 연결 중',
-  '약관·확정·취소처럼 주의할 행동 표시 중',
-  '이 사이트만의 업무 지도 완성 중',
-]
+const requestId = 'TR-2026-0812'
 
-const menuGroups = [
-  ['나의 업무', ['통합업무함', '요청·처리 현황', '개인 일정', '즐겨찾기']],
-  ['전자결재', ['결재문서 작성', '결재 대기함', '참조 문서함', '문서 보관함', '부서 문서함']],
-  ['인사·근태', ['근무 현황', '휴가 신청', '유연근무 변경', '인사정보 조회', '증명서 발급']],
-  ['복리후생', ['복지 포인트', '제휴 복지몰', '건강검진 신청', '경조금 신청', '회원관리']],
-  ['예약·시설', ['회의실 예약', '업무차량 예약', '좌석 예약', '방문객 등록', '사내식당 예약']],
-  ['비용·자산', ['법인카드 정산', '개인비용 청구', '출장 신청', 'IT 자산 신청', '소프트웨어 신청']],
-  ['교육·지식', ['사내 교육', '업무 매뉴얼', '전문가 찾기', '지식 문서']],
-]
+const appMeta: Record<WorkApp, { label: string; icon: typeof Mail }> = {
+  mail: { label: '메일', icon: Mail },
+  excel: { label: 'Excel', icon: FileSpreadsheet },
+  explorer: { label: '파일 탐색기', icon: FolderOpen },
+  portal: { label: '통합업무포털', icon: AppWindow },
+}
 
-const workRows = [
-  ['2026-0812-4471', 'AI 솔루션 이용 권한 신청', '디지털혁신팀', '김○○', '결재대기', '2026-08-12'],
-  ['2026-0812-4428', '프로젝트 회의비 정산', '사업기획팀', '이○○', '보완요청', '2026-08-12'],
-  ['2026-0811-4389', '선택적 근로시간 변경', 'HR지원팀', '박○○', '진행중', '2026-08-11'],
-  ['2026-0811-4312', '모바일 단말 교체 신청', 'IT운영팀', '최○○', '접수완료', '2026-08-11'],
-  ['2026-0810-4294', '국내출장 결과 보고', '경영지원팀', '정○○', '결재완료', '2026-08-10'],
-  ['2026-0810-4201', '사내 교육 수강 신청', '인재개발팀', '한○○', '반려', '2026-08-10'],
+const manualSteps = [
+  { app: '메일', title: '보완 요청 내용을 확인합니다.', detail: '정산번호와 누락된 증빙을 확인합니다.' },
+  { app: 'Excel', title: '대상 정산 건을 찾습니다.', detail: 'TR-2026-0812 정산 행을 선택합니다.' },
+  { app: '파일 탐색기', title: '숙박 영수증을 준비합니다.', detail: '부산 출장 폴더에서 증빙 파일을 선택합니다.' },
+  { app: '업무 포털', title: '보완 자료와 사유를 등록합니다.', detail: '영수증을 첨부하고 보완 사유를 입력합니다.' },
+  { app: '업무 포털', title: '제출 결과를 확인합니다.', detail: '접수 완료 상태와 처리 번호를 확인합니다.' },
 ]
 
 export function Demo({ onExit }: DemoProps) {
-  const [panelOpen, setPanelOpen] = useState(true)
-  const [scanState, setScanState] = useState<ScanState>('idle')
-  const [scanIndex, setScanIndex] = useState(0)
-  const [scanProgress, setScanProgress] = useState(0)
-  const [intent, setIntent] = useState<Intent | null>(null)
-  const [portalView, setPortalView] = useState<PortalView>('home')
-  const [highlight, setHighlight] = useState('')
-  const [siteCounts, setSiteCounts] = useState({ controls: 0, menus: 0, forms: 0 })
-  const [completedIntent, setCompletedIntent] = useState<Intent | null>(null)
-  const [activityTrace, setActivityTrace] = useState<TraceEvent[]>([])
-  const intentMatch = useMemo(() => inferIntent(activityTrace), [activityTrace])
+  const [phase, setPhase] = useState<Phase>('welcome')
+  const [activeApp, setActiveApp] = useState<WorkApp>('mail')
+  const [events, setEvents] = useState<string[]>([])
+  const [mailOpened, setMailOpened] = useState(false)
+  const [rowSelected, setRowSelected] = useState(false)
+  const [fileSelected, setFileSelected] = useState(false)
+  const [attached, setAttached] = useState(false)
+  const [reason, setReason] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const [query, setQuery] = useState('')
+  const [guideStep, setGuideStep] = useState(0)
 
   useEffect(() => {
-    if (scanState !== 'scanning') return
-    let step = 0
-    const controls = document.querySelectorAll('button, a, input, select, [role="button"]').length
-    const menus = document.querySelectorAll('[data-yogi-menu]').length
-    const forms = document.querySelectorAll('form, [data-yogi-flow]').length
-    const timer = window.setInterval(() => {
-      step += 1
-      setScanIndex(Math.min(step, scanMessages.length - 1))
-      setScanProgress(Math.min(step * 20, 100))
-      if (step >= scanMessages.length) {
-        window.clearInterval(timer)
-        setSiteCounts({ controls, menus, forms })
-        window.setTimeout(() => setScanState('ready'), 350)
-      }
-    }, 900)
-    return () => window.clearInterval(timer)
-  }, [scanState])
+    if (phase !== 'structuring') return
+    const timer = window.setTimeout(() => setPhase('review'), 3200)
+    return () => window.clearTimeout(timer)
+  }, [phase])
 
-  const recordActivity = (label: string, group: string) => {
-    if (scanState !== 'ready' || intent) return
-    setActivityTrace((current) => {
-      const next = [...current]
-      const event = makeTrace(label, group)
-      const existingIndex = next.findIndex((item) => item.label === event.label)
-      if (existingIndex >= 0) next.splice(existingIndex, 1)
-      next.push(event)
-      return next.slice(-5)
-    })
+  const addEvent = (event: string) => setEvents((current) => current.includes(event) ? current : [...current, event])
+  const switchApp = (app: WorkApp) => {
+    setActiveApp(app)
+    if (phase === 'capture') addEvent(`${appMeta[app].label} 열기`)
   }
-
+  const startCapture = () => {
+    setPhase('capture')
+    setActiveApp('mail')
+    addEvent('업무 기록 시작')
+  }
   const resetDemo = () => {
-    setScanState('idle')
-    setIntent(null)
-    setActivityTrace([])
-    setCompletedIntent(null)
-    setPortalView('home')
+    setPhase('welcome'); setActiveApp('mail'); setEvents([]); setMailOpened(false); setRowSelected(false)
+    setFileSelected(false); setAttached(false); setReason(''); setSubmitted(false); setQuery(''); setGuideStep(0)
   }
-
-  const revealOriginal = (view: PortalView, target: string) => {
-    setPortalView(view)
-    setHighlight(target)
-    window.setTimeout(() => {
-      document.getElementById(target)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }, 120)
-    window.setTimeout(() => setHighlight(''), 4200)
+  const runGuideAction = (step: number) => {
+    if (phase !== 'guide' || guideStep !== step) return
+    const next = step + 1
+    if (next >= manualSteps.length) return setPhase('success')
+    setGuideStep(next)
+    setActiveApp((['mail', 'excel', 'explorer', 'portal', 'portal'] as WorkApp[])[next])
   }
 
   return (
-    <main className={`demo-shell ${panelOpen ? 'panel-is-open' : ''}`}>
-      <div className="demo-utility">
+    <main className="nh-demo-shell">
+      <header className="nh-demo-topbar">
         <button onClick={onExit}><ArrowLeft size={15} /> 랜딩으로</button>
-        <p><span>POC 시연 환경</span> 실제 사내 정보가 아닌 가상 데이터입니다.</p>
-        <button onClick={resetDemo}>데모 초기화</button>
-      </div>
-
-      <div className="demo-workspace">
-        <LegacyPortal view={portalView} setView={setPortalView} highlight={highlight} completedIntent={completedIntent} onWorkflowComplete={setCompletedIntent} onActivity={recordActivity} traceMode={scanState === 'ready' && !intent} />
-
-        {!panelOpen && (
-          <button className="yogi-launcher" onClick={() => setPanelOpen(true)}>
-            <WandSparkles size={19} /> <span>여기만</span>
-          </button>
-        )}
-
-        {panelOpen && (
-          <aside className="yogi-panel" aria-label="여기만 AI 패널">
-            <div className="yogi-panel-header">
-              <div className="panel-brand"><i /> 여기만 <small>beta</small></div>
-              <button onClick={() => setPanelOpen(false)} aria-label="패널 닫기"><PanelRightClose size={20} /></button>
-            </div>
-
-            {scanState === 'idle' && (
-              <div className="panel-onboarding panel-enter">
-                <div className="scan-illustration">
-                  <div className="scan-page"><span /><span /><span /><span /></div>
-                  <div className="scan-lens"><ScanLine size={31} /></div>
-                </div>
-                <p className="panel-eyebrow">처음 방문한 사이트예요</p>
-                <h2>복잡한 화면을 먼저 읽어볼게요.</h2>
-                <p className="panel-body">메뉴와 버튼의 의미를 정리해 이 사이트만의 업무 지도를 만듭니다. 실행·제출·삭제 버튼은 누르지 않아요.</p>
-                <button className="panel-primary" onClick={() => setScanState('scanning')}>
-                  사이트 안전 탐색 시작 <ArrowRight size={17} />
-                </button>
-                <div className="safe-note"><ShieldCheck size={17} /><p><b>사용자가 확인하기 전에는 실행하지 않음</b><span>화면 구조만 확인 · 제출·삭제·결제 자동 제외</span></p></div>
-              </div>
-            )}
-
-            {scanState === 'scanning' && (
-              <div className="panel-scanning panel-enter">
-                <p className="panel-eyebrow">사이트 확인 중</p>
-                <h2>{scanMessages[scanIndex]}</h2>
-                <div className="scan-map">
-                  {Array.from({ length: 11 }).map((_, index) => <i key={index} className={index <= scanIndex * 2 ? 'found' : ''} />)}
-                  <span className="scan-beam" style={{ top: `${15 + scanIndex * 14}%` }} />
-                </div>
-                <div className="scan-progress"><span style={{ width: `${scanProgress}%` }} /></div>
-                <div className="scan-progress-copy"><span>구조 확인</span><b>{scanProgress}%</b></div>
-                <div className="scan-live-list">
-                  {scanMessages.slice(0, scanIndex + 1).map((message, index) => (
-                    <p key={message}><CheckCircle2 size={15} /> {message.replace(' 중', '')}{index === scanIndex && scanProgress < 100 ? <em>…</em> : null}</p>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {scanState === 'ready' && !intent && (
-              <ContextResolver
-                siteCounts={siteCounts}
-                trace={activityTrace}
-                match={intentMatch}
-                onConfirm={(nextIntent) => setIntent(nextIntent)}
-                onReset={() => setActivityTrace([])}
-                onRescan={resetDemo}
-              />
-            )}
-
-            {scanState === 'ready' && intent && (
-              <IntentResult intent={intent} match={intentMatch} completed={completedIntent === intent} onBack={() => { setIntent(null); setActivityTrace([]) }} revealOriginal={revealOriginal} />
-            )}
-          </aside>
-        )}
-      </div>
+        <p><span>NoHow POC</span> 실제 사내 정보가 아닌 가상 업무 환경입니다.</p>
+        <button onClick={resetDemo}>처음부터 보기</button>
+      </header>
+      <section className="nh-desktop" aria-label="Windows 업무 환경">
+        <div className="nh-wallpaper-mark"><i /><span>WORKSPACE</span></div>
+        <WorkWindow
+          activeApp={activeApp} phase={phase} guideStep={guideStep} mailOpened={mailOpened}
+          rowSelected={rowSelected} fileSelected={fileSelected} attached={attached} reason={reason} submitted={submitted}
+          onMailOpen={() => { setMailOpened(true); addEvent('보완 요청 메일 열기'); runGuideAction(0) }}
+          onRowSelect={() => { setRowSelected(true); addEvent('대상 정산 건 선택'); runGuideAction(1) }}
+          onFileSelect={() => { setFileSelected(true); addEvent('숙박 영수증 선택'); runGuideAction(2) }}
+          onAttach={() => { setAttached(true); addEvent('보완 자료 첨부'); runGuideAction(3) }}
+          onReasonChange={(value) => { setReason(value); if (value.length > 3) addEvent('보완 사유 입력') }}
+          onSubmit={() => {
+            if (phase === 'guide') return runGuideAction(4)
+            if (!attached || !reason) return
+            setSubmitted(true); addEvent('보완 자료 제출 완료')
+          }}
+        />
+        <NoHowPanel phase={phase} events={events} captureReady={submitted} query={query} guideStep={guideStep}
+          onStart={startCapture} onStop={() => setPhase('structuring')} onShare={() => setPhase('shared')}
+          onContinue={() => { setPhase('library'); setQuery('') }} onQuery={setQuery}
+          onOpenManual={() => { setPhase('guide'); setGuideStep(0); setActiveApp('mail') }} />
+        <Taskbar activeApp={activeApp} phase={phase} onSwitch={switchApp} />
+      </section>
     </main>
   )
 }
 
-type IntentResultProps = {
-  intent: Intent
-  match: IntentMatch | null
-  completed: boolean
-  onBack: () => void
-  revealOriginal: (view: PortalView, target: string) => void
+function Taskbar({ activeApp, phase, onSwitch }: { activeApp: WorkApp; phase: Phase; onSwitch: (app: WorkApp) => void }) {
+  const disabled = !['capture', 'welcome'].includes(phase)
+  return <nav className="nh-taskbar" aria-label="업무 프로그램">
+    <span className="nh-start" aria-hidden="true"><i /><i /><i /><i /></span>
+    <button aria-label="Windows 검색"><Search size={18} /></button>
+    {(Object.keys(appMeta) as WorkApp[]).map((app) => {
+      const Icon = appMeta[app].icon
+      return <button key={app} disabled={disabled} className={activeApp === app ? 'is-active' : ''} onClick={() => onSwitch(app)} aria-label={`${appMeta[app].label} 열기`}><Icon size={20} /></button>
+    })}
+    <div className="nh-taskbar-time"><b>오후 2:18</b><span>2026-08-18</span></div>
+  </nav>
 }
 
-function ContextResolver({ siteCounts, trace, match, onConfirm, onReset, onRescan }: {
-  siteCounts: { controls: number; menus: number; forms: number }
-  trace: TraceEvent[]
-  match: IntentMatch | null
-  onConfirm: (intent: Intent) => void
-  onReset: () => void
-  onRescan: () => void
-}) {
-  const ready = Boolean(match?.ready)
-  return (
-    <div className="panel-ready context-resolver panel-enter">
-      <div className="ready-summary">
-        <div className="ready-icon"><Check size={22} /></div>
-        <div><p>사이트 확인 완료</p><span>{siteCounts.controls}개 버튼·링크 · {siteCounts.menus}개 메뉴 · {Math.max(siteCounts.forms, 4)}개 업무 흐름</span></div>
-      </div>
-
-      {!trace.length ? (
-        <>
-          <p className="panel-eyebrow">최근 이동 경로를 확인합니다</p>
-          <h2>하던 일을 이어가세요.</h2>
-          <p className="panel-body">왼쪽 포털에서 평소처럼 메뉴를 눌러보세요. 여기만이 최근에 누른 메뉴와 사이트의 업무 지도를 대조합니다.</p>
-          <div className="trace-empty">
-            <MousePointer2 size={22} />
-            <p><b>먼저 관련 메뉴를 눌러보세요</b><span>입력값은 읽지 않고 버튼·링크의 이름만 이 탭에 보관합니다.</span></p>
-          </div>
-          <div className="context-privacy"><ShieldCheck size={16} /><span>텍스트 입력값 저장 안 함 · 이 탭의 최근 클릭 최대 5개</span></div>
-        </>
-      ) : (
-        <>
-          <p className="panel-eyebrow">최근에 누른 메뉴</p>
-          <h2>{ready ? '관련 업무를 찾았어요.' : '관련 업무를 찾고 있어요.'}</h2>
-          <div className="context-stack">
-            <section className="trace-card">
-              <div className="context-card-head"><span>최근 이동 경로</span><b>{trace.length}/5</b></div>
-              <div className="trace-list">
-                {trace.map((event, index) => (
-                  <div key={event.id} className={index === trace.length - 1 ? 'latest' : ''}>
-                    <i>{index + 1}</i><p><b>{event.label}</b><span>{event.group}</span></p><Check size={13} />
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <div className={`context-bridge ${ready ? 'matched' : ''}`}><span>{ready ? `최근 메뉴 ${match?.evidence.length ?? 3}개가 같은 업무와 연결됨` : '사이트 업무 지도와 비교 중'}</span></div>
-
-            <section className={`graph-card ${ready ? 'matched' : ''}`}>
-              <div className="context-card-head"><span>사이트 업무 지도</span><b>v1.0</b></div>
-              {match ? (
-                <>
-                  <p className="graph-title">{match.title}</p>
-                  <div className="graph-path">{match.path.map((node, index) => <span key={node} className={index < Math.max(match.evidence.length, 1) ? 'active' : ''}>{node}</span>)}</div>
-                </>
-              ) : <p className="graph-wait">관련 업무를 찾는 중입니다.</p>}
-            </section>
-          </div>
-
-          {ready && match ? (
-            <div className="intent-proposal panel-enter">
-              <div><span>찾은 업무</span><b>{match.title}</b><small>최근에 누른 메뉴 {match.evidence.length}개가 이 업무와 연결됩니다.</small></div>
-              <button className="panel-primary" onClick={() => onConfirm(match.intent)}>찾던 업무가 맞아요 <ArrowRight size={17} /></button>
-            </div>
-          ) : (
-            <p className="context-hint"><MousePointer2 size={14} /> 왼쪽에서 관련 메뉴를 한두 번 더 눌러보세요.</p>
-          )}
-        </>
-      )}
-      <div className="context-secondary-actions">
-        {trace.length > 0 && <button onClick={onReset}>최근 메뉴 지우기</button>}
-        <button onClick={onRescan}><ScanLine size={13} /> 사이트 다시 확인</button>
-      </div>
-    </div>
-  )
+type WorkWindowProps = {
+  activeApp: WorkApp; phase: Phase; guideStep: number; mailOpened: boolean; rowSelected: boolean
+  fileSelected: boolean; attached: boolean; reason: string; submitted: boolean
+  onMailOpen: () => void; onRowSelect: () => void; onFileSelect: () => void; onAttach: () => void
+  onReasonChange: (value: string) => void; onSubmit: () => void
 }
 
-function IntentResult({ intent, match, completed, onBack, revealOriginal }: IntentResultProps) {
-  const [withdrawStage, setWithdrawStage] = useState(2)
-
-  useEffect(() => setWithdrawStage(2), [intent])
-
-  if (intent === 'withdraw' && completed) {
-    return (
-      <div className="intent-result completion-screen panel-enter">
-        <div className="completion-mark"><Check size={32} strokeWidth={3} /></div>
-        <p className="panel-eyebrow">안내 완료</p>
-        <h2>회원 해지 신청을 완료했어요!</h2>
-        <p className="result-summary">여기만이 안내한 3단계를 모두 따라 원본 화면에서 신청이 정상 접수되었습니다.</p>
-        <div className="completion-summary">
-          <div><span>처리 결과</span><b>신청 접수 완료</b></div>
-          <div><span>AI가 한 일</span><b>경로 탐색 · 약관 연결</b></div>
-          <div><span>사람이 한 일</span><b>약관 확인 · 동의 · 최종 신청</b></div>
-        </div>
-        <div className="completion-steps">
-          <p><i><Check size={12} /></i> 메뉴 경로 찾기</p>
-          <p><i><Check size={12} /></i> 해지 약관 확인</p>
-          <p><i><Check size={12} /></i> 직접 동의하고 신청</p>
-        </div>
-        <button className="panel-primary completion-action" onClick={onBack}>다른 업무 찾아보기 <ArrowRight size={17} /></button>
-        <div className="human-control"><UserRound size={16} /><p><b>중요한 결정은 끝까지 직접</b><span>AI는 안내했고, 최종 신청은 사용자가 완료했습니다.</span></p></div>
-      </div>
-    )
-  }
-
-  if (intent === 'withdraw') {
-    return (
-      <div className="intent-result panel-enter">
-        <button className="result-back" onClick={onBack}><ArrowLeft size={15} /> 다른 업무 찾기</button>
-        <div className="understood"><Sparkles size={14} /> 최근에 누른 메뉴 {match?.evidence.length ?? 3}개로 찾았어요</div>
-        <blockquote>복지 포인트 → 제휴 복지몰 → 회원관리</blockquote>
-        <div className="result-title-row"><div><small>추천 업무</small><h2>제휴 복지몰 회원 해지 신청</h2></div><span className="risk-badge">최종 확인 필요</span></div>
-        <p className="result-summary">총 42개 메뉴에서 필요한 3단계를 찾았어요. 해지 후 포인트는 복구되지 않으므로, 내용을 확인한 사용자가 원본 화면에서 직접 신청합니다.</p>
-
-        <div className="decision-card">
-          <span>신청 전 확인</span>
-          <strong>12,480 P</strong>
-          <p>해지 즉시 소멸 예정인 복지 포인트</p>
-          <button onClick={() => revealOriginal('withdraw', 'original-balance')}><ExternalLink size={14} /> 원본에서 확인</button>
-        </div>
-
-        <div className="guided-steps">
-          <div className="guided-step complete"><i><Check size={13} /></i><p><b>메뉴 경로 찾기</b><span>복리후생 › 제휴 복지몰 › 회원관리</span></p></div>
-          <div className={`guided-step ${withdrawStage >= 3 ? 'complete' : 'active'}`}><i>{withdrawStage >= 3 ? <Check size={13} /> : '2'}</i><p><b>해지 약관 읽기</b><span>포인트·진행 중 주문 영향 확인</span></p><button onClick={() => { setWithdrawStage(3); revealOriginal('withdraw', 'original-terms') }}>약관 열기</button></div>
-          <div className={`guided-step ${withdrawStage >= 3 ? 'active' : ''}`}><i>3</i><p><b>본인이 동의하고 신청</b><span>AI는 원본 신청 위치까지 안내</span></p></div>
-        </div>
-
-        <button className="panel-primary danger-aware" onClick={() => { setWithdrawStage(3); revealOriginal('withdraw', 'original-confirm') }}>
-          원본 신청 화면으로 안내 <MousePointer2 size={17} />
-        </button>
-        <div className="human-control"><UserRound size={16} /><p><b>약관과 신청은 직접 확인합니다</b><span>약관 동의와 최종 신청은 원본 버튼을 직접 클릭하세요.</span></p></div>
-      </div>
-    )
-  }
-
-  if (intent === 'reserve') {
-    return (
-      <div className="intent-result panel-enter">
-        <button className="result-back" onClick={onBack}><ArrowLeft size={15} /> 다른 업무 찾기</button>
-        <div className="understood"><Sparkles size={14} /> 누른 메뉴에서 예약 업무를 찾았어요</div>
-        <blockquote>예약·시설 → 회의실 예약 → 시간 선택</blockquote>
-        <div className="result-title-row"><div><small>추천 업무</small><h2>사내 회의실 빠른 예약</h2></div><span className="low-risk-badge">바로 가능</span></div>
-        <p className="result-summary">예약에 필요한 장소, 시간, 인원만 골라 원본 예약표로 연결합니다.</p>
-        <div className="simple-fields">
-          <label>위치<select><option>을지로 본관</option><option>판교 캠퍼스</option></select></label>
-          <label>날짜<input type="date" defaultValue="2026-08-13" /></label>
-          <div><label>시작<input type="time" defaultValue="14:00" /></label><label>종료<input type="time" defaultValue="15:00" /></label></div>
-          <label>인원<select><option>4명</option><option>6명</option><option>8명</option></select></label>
-        </div>
-        <button className="panel-primary" onClick={() => revealOriginal('reserve', 'room-grid')}>조건에 맞는 회의실 3개 보기 <ArrowRight size={17} /></button>
-        <div className="human-control"><CalendarDays size={16} /><p><b>선택과 확정은 직접</b><span>여기만은 빈 회의실까지 찾고, 실제 예약은 원본에서 진행합니다.</span></p></div>
-      </div>
-    )
-  }
-
-  if (intent === 'expense') {
-    return (
-      <div className="intent-result panel-enter">
-        <button className="result-back" onClick={onBack}><ArrowLeft size={15} /> 다른 업무 찾기</button>
-        <div className="understood"><Sparkles size={14} /> 관련 흐름 2개를 찾았어요</div>
-        <blockquote>비용·자산 → 법인카드 정산</blockquote>
-        <h2>어떤 비용을 정산하나요?</h2>
-        <p className="result-summary">정산 방식에 따라 증빙과 결재선이 달라 먼저 구분이 필요해요.</p>
-        <div className="choice-list">
-          <button><span><b>법인카드 사용분</b><small>카드 내역을 불러와 영수증 첨부</small></span><ArrowRight size={17} /></button>
-          <button><span><b>개인 비용 청구</b><small>교통비·소모품 등 개인 결제분</small></span><ArrowRight size={17} /></button>
-        </div>
-        <div className="human-control"><CircleHelp size={16} /><p><b>한 단계만 더 알려주세요</b><span>애매한 요청은 AI가 추측해 실행하지 않고 사람에게 되묻습니다.</span></p></div>
-      </div>
-    )
-  }
-
-  return null
+function WorkWindow(props: WorkWindowProps) {
+  const { activeApp, phase, guideStep } = props
+  const Icon = appMeta[activeApp].icon
+  return <article className={`nh-work-window app-${activeApp}`}>
+    <div className="nh-window-titlebar"><span><Icon size={15} /> {activeApp === 'excel' ? '출장비_정산내역_8월.xlsx' : appMeta[activeApp].label}</span><span className="nh-window-actions"><i>−</i><i>□</i><i>×</i></span></div>
+    {activeApp === 'mail' && <MailApp {...props} />}
+    {activeApp === 'excel' && <ExcelApp {...props} />}
+    {activeApp === 'explorer' && <ExplorerApp {...props} />}
+    {activeApp === 'portal' && <PortalApp {...props} />}
+    {phase === 'guide' && <div className="nh-guide-label"><MousePointer2 size={14} /> {guideStep + 1}단계 · 파란색으로 표시된 항목을 선택하세요.</div>}
+  </article>
 }
 
-type LegacyPortalProps = {
-  view: PortalView
-  setView: (view: PortalView) => void
-  highlight: string
-  completedIntent: Intent | null
-  onWorkflowComplete: (intent: Intent) => void
-  onActivity: (label: string, group: string) => void
-  traceMode: boolean
-}
-
-function LegacyPortal({ view, setView, highlight, completedIntent, onWorkflowComplete, onActivity, traceMode }: LegacyPortalProps) {
-  const [notice, setNotice] = useState('')
-  const [termsOpen, setTermsOpen] = useState(false)
-  const [confirmed, setConfirmed] = useState(false)
-  const [reason, setReason] = useState('')
-  const timerRef = useRef<number | null>(null)
-
-  const flash = (message: string) => {
-    setNotice(message)
-    if (timerRef.current) window.clearTimeout(timerRef.current)
-    timerRef.current = window.setTimeout(() => setNotice(''), 2200)
-  }
-
-  const statusSummary = useMemo(() => ({ pending: 17, progress: 6, overdue: 2 }), [])
-
-  return (
-    <section className="legacy-portal" aria-label="가상 레거시 업무 포털">
-      <header className="legacy-global">
-        <div className="legacy-logo" onClick={() => setView('home')}><b>HANBIT</b><span>Enterprise Works</span></div>
-        <div className="legacy-global-links"><button data-yogi-menu>업무포털</button><button data-yogi-menu>그룹웨어</button><button data-yogi-menu>지식관리</button><button data-yogi-menu>지원센터</button></div>
-        <div className="legacy-user"><button><Bell size={14} /><em>4</em></button><span>디지털혁신팀 김○○</span><ChevronDown size={13} /><button>로그아웃</button></div>
-      </header>
-      <div className="legacy-toolbar">
-        <button><Grid3X3 size={14} /> 전체서비스</button>
-        <div className="legacy-search"><select aria-label="검색 범위"><option>통합검색</option></select><input aria-label="검색어" placeholder="검색어를 입력하세요" /><button><Search size={14} /></button></div>
-        <span>최근 접속 2026-08-12 09:41:22</span><button>화면설정</button><button>도움말</button>
-      </div>
-      <div className="legacy-layout">
-        <aside className="legacy-sidebar">
-          <div className="sidebar-title"><LayoutList size={14} /> 전체 메뉴 <button>메뉴관리</button></div>
-          {menuGroups.map(([group, items]) => (
-            <div className="legacy-menu-group" key={group as string}>
-              <b>{group as string}<ChevronDown size={11} /></b>
-              {(items as string[]).map((item) => (
-                <button key={item} data-yogi-menu data-trace-target={item} onClick={() => {
-                  onActivity(item, group as string)
-                  if (traceMode && ['복지 포인트', '제휴 복지몰', '회원관리'].includes(item)) {
-                    flash(`‘${item}’ 메뉴를 최근 이동 경로에 추가했습니다.`)
-                    return
-                  }
-                  if (item === '회의실 예약') setView('reserve')
-                  else if (item === '회원관리') setView('withdraw')
-                  else flash(`‘${item}’ 화면은 POC에서 축약되었습니다.`)
-                }}>{item}<ChevronRight size={9} /></button>
-              ))}
-            </div>
-          ))}
-          <div className="legacy-banner"><b>보안 프로그램 점검</b><span>설치 상태를 확인하세요</span><button>확인</button></div>
-        </aside>
-
-        <div className="legacy-main">
-          <div className="legacy-breadcrumb"><button onClick={() => setView('home')}>HOME</button><ChevronRight size={10} />{view === 'home' ? '통합업무함' : view === 'withdraw' ? '복리후생 > 제휴 복지몰 > 회원관리' : '예약·시설 > 회의실 예약'}</div>
-          {view === 'home' && <LegacyHome statusSummary={statusSummary} flash={flash} setView={setView} onActivity={onActivity} />}
-          {view === 'withdraw' && (
-            <WithdrawPage
-              highlight={highlight}
-              termsOpen={termsOpen}
-              setTermsOpen={setTermsOpen}
-              confirmed={confirmed}
-              setConfirmed={setConfirmed}
-              reason={reason}
-              setReason={setReason}
-              submitted={completedIntent === 'withdraw'}
-              onSubmit={() => onWorkflowComplete('withdraw')}
-            />
-          )}
-          {view === 'reserve' && <ReservePage highlight={highlight} flash={flash} />}
-        </div>
-      </div>
-      {notice && <div className="legacy-toast">{notice}</div>}
+function MailApp({ phase, guideStep, mailOpened, onMailOpen }: WorkWindowProps) {
+  const guided = phase === 'guide' && guideStep === 0
+  return <div className="nh-mail-app">
+    <aside className="nh-app-sidebar"><button className="is-selected">받은 편지함 <b>12</b></button><button>중요 편지함</button><button>보낸 편지함</button><button>임시 보관함</button><button>업무 알림</button></aside>
+    <section className="nh-mail-list"><div className="nh-app-toolbar"><button>새 메일</button><span>받은 편지함</span><Search size={15} /></div>
+      <button className={`nh-mail-row ${mailOpened ? 'is-read' : 'is-unread'} ${guided ? 'nh-guide-target' : ''}`} onClick={onMailOpen}><CircleUserRound size={25} /><span><b>재무지원팀</b><strong>[보완 요청] {requestId} 출장비 정산</strong><small>숙박비 증빙이 누락되었습니다. 영수증을 추가해 주세요.</small></span><time>오후 2:03</time></button>
+      {['법인카드 사용 내역 안내', '8월 비용 마감 일정', '국내 출장 사전 승인 완료', '복리후생 포인트 안내'].map((title, index) => <div className="nh-mail-row muted" key={title}><CircleUserRound size={25} /><span><b>{index % 2 ? 'HR지원팀' : '재무지원팀'}</b><strong>{title}</strong><small>업무 관련 안내 메일입니다.</small></span><time>오전 {9 + index}:20</time></div>)}
     </section>
-  )
+    <section className="nh-mail-content">{mailOpened || guided ? <><small>재무지원팀 · 오후 2:03</small><h2>[보완 요청] {requestId} 출장비 정산</h2><p>안녕하세요. 부산 출장 정산 건의 <b>숙박 영수증</b>이 누락되어 보완을 요청드립니다.</p><dl><div><dt>정산번호</dt><dd>{requestId}</dd></div><div><dt>항목</dt><dd>숙박비 · 184,000원</dd></div><div><dt>요청사항</dt><dd>숙박 영수증 추가 첨부</dd></div></dl><p>통합업무포털에서 증빙을 추가한 뒤 다시 제출해 주세요.</p></> : <div className="nh-empty-app"><Mail size={38} /><p>확인할 메일을 선택하세요.</p></div>}</section>
+  </div>
 }
 
-function LegacyHome({ statusSummary, flash, setView, onActivity }: { statusSummary: Record<string, number>, flash: (message: string) => void, setView: (view: PortalView) => void, onActivity: (label: string, group: string) => void }) {
-  return (
-    <>
-      <div className="legacy-title"><div><h1>통합업무함</h1><p>전자결재 및 요청 업무의 처리 현황을 확인합니다.</p></div><div><button>사용자 매뉴얼</button><button>화면 인쇄</button></div></div>
-      <div className="legacy-tabbar"><button className="active">나의 업무</button><button>부서 업무</button><button>대리결재</button><button>완료 업무</button><button>임시저장</button></div>
-      <div className="legacy-status-grid">
-        <button onClick={() => flash('결재 대기함을 불러옵니다.')}><span>결재 대기</span><b>{statusSummary.pending}</b><small>오늘 +4</small></button>
-        <button onClick={() => flash('진행 중 업무를 불러옵니다.')}><span>진행 중</span><b>{statusSummary.progress}</b><small>오늘 +1</small></button>
-        <button className="warning" onClick={() => flash('기한 초과 업무를 불러옵니다.')}><span>기한 초과</span><b>{statusSummary.overdue}</b><small>확인 필요</small></button>
-        <button onClick={() => flash('완료 업무를 불러옵니다.')}><span>이번 달 완료</span><b>48</b><small>전월 +12%</small></button>
-      </div>
-      <div className="legacy-filters">
-        <table><tbody>
-          <tr><th>처리 상태</th><td><select><option>전체</option></select><label><input type="checkbox" /> 결재대기</label><label><input type="checkbox" /> 보완요청</label><label><input type="checkbox" /> 진행중</label></td><th>조회 기간</th><td><input value="2026-07-13" readOnly /> ~ <input value="2026-08-12" readOnly /><button>1개월</button><button>3개월</button></td></tr>
-          <tr><th>검색 조건</th><td colSpan={3}><select><option>문서 제목</option></select><input className="wide" placeholder="검색어" /><button className="legacy-blue">조회</button><button>초기화</button></td></tr>
-        </tbody></table>
-      </div>
-      <div className="legacy-table-head"><b>업무 목록 <span>총 128건</span></b><div><select><option>20개씩 보기</option></select><button>엑셀 다운로드</button><button>일괄 처리</button></div></div>
-      <table className="legacy-data-table"><thead><tr><th><input type="checkbox" /></th><th>문서번호</th><th>문서제목</th><th>담당부서</th><th>기안자</th><th>처리상태</th><th>기안일</th></tr></thead><tbody>
-        {workRows.map((row) => <tr key={row[0]}><td><input type="checkbox" /></td>{row.map((cell, index) => <td key={cell} className={index === 4 ? `status-${cell}` : ''}>{cell}</td>)}</tr>)}
-      </tbody></table>
-      <div className="legacy-paging"><button>«</button><button>‹</button><button className="active">1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>›</button><button>»</button></div>
-      <div className="legacy-quick-actions" data-yogi-flow>
-        <b>자주 찾는 업무</b>
-        <button data-yogi-menu onClick={() => { onActivity('회의실 예약', '예약·시설'); setView('reserve') }}>회의실 예약</button><button data-yogi-menu>휴가 신청</button><button data-yogi-menu onClick={() => onActivity('비용 정산', '비용·자산')}>비용 정산</button><button data-yogi-menu>증명서 발급</button><button data-yogi-menu>IT 서비스 신청</button>
-      </div>
-    </>
-  )
+function ExcelApp({ phase, guideStep, rowSelected, onRowSelect }: WorkWindowProps) {
+  const guided = phase === 'guide' && guideStep === 1
+  return <div className="nh-excel-app">
+    <div className="nh-excel-tabs"><b>파일</b><span>홈</span><span>삽입</span><span>페이지 레이아웃</span><span>수식</span><span>데이터</span><span>검토</span><span>보기</span></div>
+    <div className="nh-excel-ribbon"><button>붙여넣기</button><button>복사</button><button>정렬 및 필터</button><button>조건부 서식</button><button>표 서식</button></div>
+    <div className="nh-formula"><span>D12</span><b>fx</b><p>{rowSelected || guided ? requestId : ''}</p></div>
+    <table className="nh-sheet"><thead><tr><th /><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr></thead><tbody>
+      <tr><th>1</th><td>정산번호</td><td>출장일</td><td>지역</td><td>항목</td><td>금액</td><td>상태</td></tr>
+      <tr><th>2</th><td>TR-2026-0807</td><td>2026-08-07</td><td>대전</td><td>교통비</td><td>68,000원</td><td>완료</td></tr>
+      <tr className={`${rowSelected ? 'selected' : ''} ${guided ? 'nh-guide-target' : ''}`} onClick={onRowSelect}><th>3</th><td>{requestId}</td><td>2026-08-12</td><td>부산</td><td>숙박비</td><td>184,000원</td><td>보완 요청</td></tr>
+      <tr><th>4</th><td>TR-2026-0816</td><td>2026-08-16</td><td>울산</td><td>식비</td><td>42,000원</td><td>검토 중</td></tr>
+      {Array.from({ length: 10 }).map((_, index) => <tr key={index}><th>{index + 5}</th><td /><td /><td /><td /><td /><td /></tr>)}
+    </tbody></table><div className="nh-excel-status"><span>준비</span><b>출장비 정산 내역</b><span>100%</span></div>
+  </div>
 }
 
-type WithdrawPageProps = {
-  highlight: string
-  termsOpen: boolean
-  setTermsOpen: (value: boolean) => void
-  confirmed: boolean
-  setConfirmed: (value: boolean) => void
-  reason: string
-  setReason: (value: string) => void
-  submitted: boolean
-  onSubmit: () => void
+function ExplorerApp({ phase, guideStep, fileSelected, onFileSelect }: WorkWindowProps) {
+  const guided = phase === 'guide' && guideStep === 2
+  return <div className="nh-explorer-app">
+    <div className="nh-explorer-tools"><button>새로 만들기</button><button>잘라내기</button><button>복사</button><button>붙여넣기</button><button>정렬</button><button>보기</button></div>
+    <div className="nh-explorer-address"><button>←</button><button>→</button><p>문서 › 출장비 정산 › 부산 출장</p><label><Search size={14} /><input aria-label="파일 검색" placeholder="부산 출장 검색" /></label></div>
+    <aside><button>홈</button><button>갤러리</button><hr /><button>바탕 화면</button><button>다운로드</button><button className="is-selected">문서</button><button>사진</button></aside>
+    <section className="nh-file-grid"><button><FolderOpen size={43} /><span>교통비 증빙</span></button><button><FolderOpen size={43} /><span>회의 자료</span></button><button className={`${fileSelected ? 'is-selected' : ''} ${guided ? 'nh-guide-target' : ''}`} onClick={onFileSelect}><FileText size={43} /><span>숙박_영수증.pdf</span><small>PDF · 428KB</small></button><button><FileSpreadsheet size={43} /><span>출장비_정산내역.xlsx</span><small>Excel · 32KB</small></button></section>
+    <footer>4개 항목 | {fileSelected ? '1개 항목 선택됨' : '항목을 선택하세요'}</footer>
+  </div>
 }
 
-function WithdrawPage(props: WithdrawPageProps) {
-  const { highlight, termsOpen, setTermsOpen, confirmed, setConfirmed, reason, setReason, submitted, onSubmit } = props
-  if (submitted) return (
-    <div className="legacy-complete"><CheckCircle2 size={42} /><h1>회원 해지 신청이 접수되었습니다.</h1><p>가상 시연이므로 실제 정보나 계정에는 영향을 주지 않습니다.</p><button onClick={() => window.location.reload()}>처음으로</button></div>
-  )
-  return (
-    <div data-yogi-flow="membership-withdrawal">
-      <div className="legacy-title"><div><h1>제휴 복지몰 회원관리</h1><p>개인정보 및 서비스 이용 상태를 변경합니다.</p></div><div><button>이용안내</button><button>FAQ</button></div></div>
-      <div className="legacy-info-box"><AlertTriangle size={17} /><div><b>회원 해지는 복지몰 서비스에만 적용됩니다.</b><p>회사 포털 계정과 인사정보는 유지되며, 해지 후 동일 사번으로 재가입할 수 있습니다.</p></div></div>
-      <table className="legacy-form-table"><tbody>
-        <tr><th>회원 상태</th><td><span className="legacy-status-on">정상 이용</span></td><th>가입일</th><td>2024-03-11</td></tr>
-        <tr id="original-balance" className={highlight === 'original-balance' ? 'yogi-highlight' : ''}><th>잔여 복지 포인트</th><td><b className="point-balance">12,480 P</b></td><th>소멸 예정일</th><td>회원 해지 즉시</td></tr>
-        <tr><th>진행 중 주문</th><td>0건</td><th>미처리 환불</th><td>0건</td></tr>
-      </tbody></table>
-      <h2 className="legacy-subtitle">회원 해지 유의사항</h2>
-      <div className="legacy-terms-summary">
-        <ol><li>해지 즉시 남은 복지 포인트가 소멸되며 복구되지 않습니다.</li><li>쿠폰과 장바구니 정보가 모두 삭제됩니다.</li><li>거래 기록은 관계 법령에 따라 일정 기간 보관될 수 있습니다.</li><li>재가입 시 기존 혜택과 이용 이력은 복원되지 않습니다.</li></ol>
-        <button id="original-terms" className={highlight === 'original-terms' ? 'yogi-highlight' : ''} onClick={() => setTermsOpen(true)}><FileText size={13} /> 전체 약관 보기</button>
+function PortalApp({ phase, guideStep, attached, reason, submitted, onAttach, onReasonChange, onSubmit }: WorkWindowProps) {
+  const attachGuided = phase === 'guide' && guideStep === 3
+  const submitGuided = phase === 'guide' && guideStep === 4
+  const effectiveAttached = phase === 'guide' ? guideStep >= 4 : attached
+  return <div className="nh-portal-app">
+    <header><div className="nh-portal-brand"><i /> SK 통합업무포털</div><nav><button>업무</button><button>전자결재</button><button>인사</button><button>비용·자산</button><button>예약·시설</button></nav><span>김노하 님</span></header>
+    <aside><b>비용·자산</b><button>법인카드 정산</button><button className="is-selected">개인비용 청구</button><button>출장 신청</button><button>정산 현황</button><button>자산 신청</button></aside>
+    <section><p className="nh-breadcrumb">비용·자산 › 개인비용 청구 › 보완 요청</p><div className="nh-portal-heading"><div><h2>출장비 정산 보완</h2><p>요청된 증빙과 사유를 등록해 주세요.</p></div><span>보완 요청</span></div>
+      <div className="nh-request-summary"><div><small>정산번호</small><b>{requestId}</b></div><div><small>출장지</small><b>부산</b></div><div><small>정산금액</small><b>184,000원</b></div><div><small>요청항목</small><b>숙박 영수증</b></div></div>
+      <div className="nh-portal-form"><label>증빙 파일 <em>*</em><div><button className={attachGuided ? 'nh-guide-target' : ''} onClick={onAttach}><FolderOpen size={16} /> 파일 선택</button><span>{effectiveAttached ? '숙박_영수증.pdf · 428KB' : '선택된 파일이 없습니다.'}</span>{effectiveAttached && <CheckCircle2 size={17} />}</div></label>
+        <label>보완 사유 <em>*</em><textarea aria-label="보완 사유" value={phase === 'guide' ? '숙박 영수증을 추가 첨부합니다.' : reason} onChange={(event) => onReasonChange(event.target.value)} placeholder="보완 사유를 입력하세요." /></label>
+        <div className="nh-portal-notice"><b>제출 전 확인</b><p>첨부한 파일과 정산 금액을 확인한 뒤 제출해 주세요.</p></div>
+        <div className="nh-portal-actions"><button>임시 저장</button><button className={submitGuided ? 'primary nh-guide-target' : 'primary'} onClick={onSubmit}>{submitted ? '제출 완료' : '보완 자료 제출'}</button></div>
       </div>
-      <h2 className="legacy-subtitle">해지 사유 및 본인 확인</h2>
-      <table className="legacy-form-table"><tbody>
-        <tr><th>해지 사유 <em>*</em></th><td><select value={reason} onChange={(event) => setReason(event.target.value)}><option value="">선택하세요</option><option>이용 빈도가 낮음</option><option>서비스 불만족</option><option>개인정보 우려</option><option>기타</option></select></td></tr>
-        <tr id="original-confirm" className={highlight === 'original-confirm' ? 'yogi-highlight' : ''}><th>필수 동의 <em>*</em></th><td><label className="legacy-check"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} /> 회원 해지 시 포인트 소멸 및 개인정보 처리에 관한 유의사항을 확인했습니다.</label></td></tr>
-      </tbody></table>
-      <div className="legacy-form-actions"><button>취소</button><button className="legacy-danger" disabled={!confirmed || !reason} onClick={onSubmit}><LockKeyhole size={13} /> 회원 해지 신청</button></div>
-      {termsOpen && <div className="legacy-modal-backdrop"><div className="legacy-modal"><div><h2>제휴 복지몰 회원 해지 약관</h2><button onClick={() => setTermsOpen(false)}><X size={17} /></button></div><article><b>제1조 (목적)</b><p>본 약관은 가상 시연용 복지몰의 회원 해지 절차를 설명하기 위해 작성된 예시 문서입니다.</p><b>제2조 (포인트의 처리)</b><p>회원이 해지를 신청하면 보유한 미사용 포인트는 즉시 소멸하며, 해지 철회 또는 재가입 이후에도 복원되지 않습니다.</p><b>제3조 (주문 및 환불)</b><p>진행 중인 주문 또는 환불이 있는 경우 해당 처리가 완료될 때까지 해지가 제한될 수 있습니다.</p><b>제4조 (개인정보)</b><p>법령상 보관 의무가 없는 개인정보는 해지 절차 완료 후 지체 없이 파기합니다.</p></article><button className="legacy-blue" onClick={() => setTermsOpen(false)}>확인</button></div></div>}
-    </div>
-  )
+    </section>
+  </div>
 }
 
-function ReservePage({ highlight, flash }: { highlight: string, flash: (message: string) => void }) {
-  return (
-    <div data-yogi-flow="meeting-room-reservation">
-      <div className="legacy-title"><div><h1>회의실 예약</h1><p>사업장별 회의실 현황을 조회하고 예약합니다.</p></div><div><button>예약내역</button><button>운영기준</button></div></div>
-      <div className="legacy-filters reserve-filter"><table><tbody><tr><th>사업장</th><td><select><option>을지로 본관</option></select></td><th>예약일</th><td><input value="2026-08-13" readOnly /></td><th>시간</th><td><select><option>14:00</option></select> ~ <select><option>15:00</option></select></td><td><button className="legacy-blue">조회</button></td></tr></tbody></table></div>
-      <div className={`room-grid ${highlight === 'room-grid' ? 'yogi-highlight' : ''}`} id="room-grid">
-        <div className="room-grid-head"><b>2026.08.13 (목) · 을지로 본관</b><span><i className="available" />예약 가능 <i className="busy" />예약됨</span></div>
-        <table><thead><tr><th>회의실</th><th>정원</th>{['13:00','13:30','14:00','14:30','15:00','15:30'].map((time) => <th key={time}>{time}</th>)}</tr></thead><tbody>
-          {['A-301 프로젝트룸','A-302 회의실','B-401 이노베이션룸','B-402 포커스룸','C-501 화상회의실'].map((room, roomIndex) => <tr key={room}><th>{room}</th><td>{[6,8,12,4,10][roomIndex]}명</td>{Array.from({ length: 6 }).map((_, cellIndex) => { const busy = (roomIndex + cellIndex) % 4 === 1; return <td key={cellIndex}><button className={busy ? 'busy' : 'available'} disabled={busy} onClick={() => flash(`${room} ${13 + Math.floor(cellIndex/2)}:${cellIndex%2?'30':'00'} 예약 확인 화면을 엽니다.`)}>{busy ? '예약' : '선택'}</button></td>})}</tr>)}
-        </tbody></table>
-      </div>
-      <div className="legacy-info-box"><CircleHelp size={17} /><div><b>예약 시 유의사항</b><p>10분 이상 사용하지 않으면 예약이 자동 취소되며, 외부 방문객이 있는 경우 별도 등록이 필요합니다.</p></div></div>
-    </div>
-  )
+type NoHowPanelProps = { phase: Phase; events: string[]; captureReady: boolean; query: string; guideStep: number; onStart: () => void; onStop: () => void; onShare: () => void; onContinue: () => void; onQuery: (value: string) => void; onOpenManual: () => void }
+
+function NoHowPanel(props: NoHowPanelProps) {
+  const { phase } = props
+  if (phase === 'structuring') return <StructureOverlay />
+  if (phase === 'review') return <ManualReview onShare={props.onShare} />
+  if (phase === 'shared') return <ShareSuccess onContinue={props.onContinue} />
+  if (phase === 'library') return <ManualLibrary query={props.query} onQuery={props.onQuery} onOpen={props.onOpenManual} />
+  if (phase === 'success') return <GuideSuccess />
+  return <aside className={`nh-panel ${phase === 'guide' ? 'is-guide' : ''}`} aria-label="NoHow 패널">
+    <div className="nh-panel-header"><span className="nh-brand"><i /> NoHow</span>{phase === 'capture' && <span className="nh-recording"><i /> REC</span>}{phase === 'guide' && <span className="nh-guide-mode">LIVE GUIDE</span>}</div>
+    {phase === 'welcome' && <div className="nh-panel-welcome"><div className="nh-welcome-visual"><Monitor size={35} /><span><MousePointer2 size={19} /></span></div><p className="nh-eyebrow">WORK CAPTURE</p><h1>평소처럼 일하면<br />매뉴얼이 완성됩니다.</h1><p>메일과 Excel, 파일 탐색기와 사내 프로그램을 오가는 업무도 하나의 과정으로 기록합니다.</p><button className="nh-primary" onClick={props.onStart}><Play size={17} fill="currentColor" /> 매뉴얼 만들기</button><div className="nh-mini-flow"><span>기록</span><ChevronRight size={13} /><span>AI 정리</span><ChevronRight size={13} /><span>공유</span><ChevronRight size={13} /><span>안내</span></div></div>}
+    {phase === 'capture' && <div className="nh-panel-capture"><p className="nh-eyebrow">업무 기록 중</p><h2>출장비 정산 보완</h2><div className="nh-event-total"><strong>{Math.max(4, props.events.length * 3 + 1)}</strong><span>개의 화면과 행동을<br />기록하고 있습니다.</span></div><div className="nh-app-chips">{Object.entries(appMeta).map(([key, meta]) => { const Icon = meta.icon; return <span key={key}><Icon size={12} /> {meta.label}</span> })}</div><div className="nh-recent-events"><b>최근 기록</b>{props.events.slice(-5).reverse().map((event, index) => <p key={event} className={index === 0 ? 'current' : ''}>{index === 0 ? <span /> : <Check size={13} />} {event}</p>)}</div><button className="nh-primary" disabled={!props.captureReady} onClick={props.onStop}>{props.captureReady ? '기록 종료하고 매뉴얼 만들기' : '업무를 완료하면 기록을 종료할 수 있습니다.'}</button></div>}
+    {phase === 'guide' && <div className="nh-panel-guide"><p className="nh-eyebrow">출장비 정산 보완</p><h2>{props.guideStep + 1} / {manualSteps.length}</h2><div className="nh-guide-card"><span>{manualSteps[props.guideStep].app}</span><h3>{manualSteps[props.guideStep].title}</h3><p>{manualSteps[props.guideStep].detail}</p></div><div className="nh-guide-progress">{manualSteps.map((step, index) => <i key={step.title} className={index < props.guideStep ? 'done' : index === props.guideStep ? 'active' : ''}>{index < props.guideStep ? <Check size={11} /> : index + 1}</i>)}</div><div className="nh-guide-hint"><MousePointer2 size={16} /><p><b>현재 화면에서 바로 따라 하세요.</b><span>파란색으로 표시된 위치를 직접 선택하면 다음 단계로 이동합니다.</span></p></div></div>}
+  </aside>
+}
+
+function StructureOverlay() {
+  return <section className="nh-center-modal nh-structure-modal"><div className="nh-ai-orbit"><Bot size={31} /><i /><i /><i /></div><p className="nh-eyebrow">AI STRUCTURE</p><h2>업무 과정을 매뉴얼로 정리하고 있습니다.</h2><p>화면과 클릭, 프로그램 전환을 연결해 의미 있는 업무 단계를 찾습니다.</p><div className="nh-structure-progress"><span /></div><div className="nh-structure-status"><span><Check size={14} /> 28개 화면과 행동 확인</span><span><Check size={14} /> 4개 프로그램 연결</span><span className="active"><Sparkles size={14} /> 업무 단계와 설명 생성 중</span></div></section>
+}
+
+function ManualReview({ onShare }: { onShare: () => void }) {
+  return <section className="nh-manual-modal"><header><div><p className="nh-eyebrow">AI가 정리한 매뉴얼</p><h2>출장비 정산 보완</h2><span>28개 행동을 5개의 업무 단계로 정리했습니다.</span></div><button className="nh-primary" onClick={onShare}><Share2 size={16} /> 구성원들과 공유하기</button></header><div className="nh-manual-meta"><span>메일</span><span>Excel</span><span>파일 탐색기</span><span>업무 포털</span><b>예상 소요 4분</b></div><div className="nh-manual-step-grid">{manualSteps.map((step, index) => <article key={step.title}><i>{index + 1}</i><div className={`nh-step-thumb thumb-${index + 1}`}><span>{step.app}</span><MousePointer2 size={16} /></div><div><small>{step.app}</small><h3>{step.title}</h3><p>{step.detail}</p></div><button aria-label={`${index + 1}단계 수정`}>수정</button></article>)}</div></section>
+}
+
+function ShareSuccess({ onContinue }: { onContinue: () => void }) {
+  return <section className="nh-center-modal nh-shared-modal"><div className="nh-success-mark"><Check size={34} /></div><p className="nh-eyebrow">KNOWLEDGE SHARING</p><h2>업무 매뉴얼을 공유했습니다.</h2><p>재무지원팀 구성원이라면 누구나 이 매뉴얼을 검색하고 사용할 수 있습니다.</p><div className="nh-share-people"><span>김</span><span>이</span><span>박</span><span>+24</span></div><button className="nh-primary" onClick={onContinue}>다른 구성원의 화면에서 이어보기 <ArrowRight size={16} /></button></section>
+}
+
+function ManualLibrary({ query, onQuery, onOpen }: { query: string; onQuery: (value: string) => void; onOpen: () => void }) {
+  const showResult = query.length > 4
+  return <section className="nh-library-modal"><header><span className="nh-brand"><i /> NoHow</span><div><CircleUserRound size={18} /> 이노하 · 재무지원팀</div></header><div className="nh-library-content"><p className="nh-eyebrow">다른 구성원의 업무 화면</p><h2>필요한 업무 매뉴얼을 찾아보세요.</h2><label className="nh-library-search"><Search size={20} /><input autoFocus aria-label="업무 매뉴얼 검색" value={query} onChange={(event) => onQuery(event.target.value)} placeholder="어떤 업무를 수행하려고 하나요?" /></label>{showResult ? <button className="nh-search-result" onClick={onOpen}><div className="nh-search-icon"><FileText size={23} /></div><div><span>가장 관련 있는 매뉴얼 · 재무지원팀</span><h3>출장비 정산 보완</h3><p>메일 → Excel → 파일 탐색기 → 통합업무포털 · 5단계 · 약 4분</p></div><ArrowRight size={21} /></button> : <div className="nh-library-recent"><p>최근 많이 사용한 매뉴얼</p><span>법인카드 정산</span><span>휴가 신청 변경</span><span>출장 결과 보고</span></div>}</div></section>
+}
+
+function GuideSuccess() {
+  return <section className="nh-center-modal nh-guide-success"><div className="nh-success-mark"><Check size={37} /></div><p className="nh-eyebrow">LIVE GUIDE COMPLETE</p><h2>출장비 정산 보완을 완료했습니다.</h2><p>NoHow 매뉴얼의 5단계를 실제 업무 화면에서 모두 수행했습니다.</p><div className="nh-complete-summary"><span><b>4개</b> 사용한 프로그램</span><span><b>5단계</b> 완료한 업무</span><span><b>4분</b> 예상 소요 시간</span></div><blockquote>한 사람의 업무 경험이 모든 구성원의 매뉴얼이 됩니다.</blockquote></section>
 }
