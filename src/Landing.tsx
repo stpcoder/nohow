@@ -62,6 +62,7 @@ export function Landing({ onDemo }: { onDemo: () => void }) {
           <a href="#problem">문제</a>
           <a href="#solution">작동 방식</a>
           <a href="#knowledge">조직 지식</a>
+          <a href="#demo-video">데모 영상</a>
           <button className="nav-demo" onClick={onDemo}>NoHow 체험하기 <ArrowRight size={15} /></button>
         </div>
       </nav>
@@ -78,8 +79,8 @@ export function Landing({ onDemo }: { onDemo: () => void }) {
           </p>
           <div className="hero-actions">
             <button className="primary-cta" onClick={onDemo}>NoHow 데모 체험하기 <ArrowRight size={17} /></button>
-            <a className="text-cta" href="#knowledge">
-              주요 기능 확인하기 <ArrowRight size={16} />
+            <a className="text-cta" href="#demo-video">
+              데모 영상 보기 <ArrowRight size={16} />
             </a>
           </div>
         </div>
@@ -166,7 +167,7 @@ export function Landing({ onDemo }: { onDemo: () => void }) {
             <source src={nohowDemoVideo} type="video/mp4" />
           </video>
         </div>
-        <div className="demo-video-note"><span>전체 데모 · 1분 39초</span><button className="nav-demo" onClick={onDemo}>직접 체험하기 <ArrowRight size={14} /></button></div>
+        <div className="demo-video-note"><span>전체 데모 · 1분 43초</span><button className="nav-demo" onClick={onDemo}>직접 체험하기 <ArrowRight size={14} /></button></div>
       </section>
 
       <section className="friction-section" id="problem">

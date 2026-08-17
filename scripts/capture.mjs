@@ -137,7 +137,7 @@ async function recordWalkthrough() {
   const page = await context.newPage()
   await page.goto(`${baseUrl}/#/demo`, { waitUntil: 'networkidle' })
   await installCaptureEffects(page)
-  await pause(page, 4200)
+  await pause(page, 8500)
 
   await completeCaptureWork(page, true)
   await page.getByRole('heading', { name: '업무 과정을 매뉴얼로 정리하고 있습니다.' }).waitFor()
